@@ -1,5 +1,7 @@
 package com.idoelbak.tracker.ui
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -8,14 +10,22 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.idoelbak.tracker.R
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -59,11 +69,37 @@ fun TrackerApp(vm: TrackerViewModel = viewModel()) {
     val route = current?.destination?.route
     val onATab = Tabs.any { it.route == route }
 
+    val snackbar = remember { SnackbarHostState() }
+
+    // The Storage Access Framework does the file choosing, so the app needs no storage permission.
+    val exportJson = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json")
+    ) { uri -> uri?.let { vm.exportTo(it, csv = false) } }
+
+    val exportCsv = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("text/csv")
+    ) { uri -> uri?.let { vm.exportTo(it, csv = true) } }
+
+    val pickBackup = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri -> uri?.let { vm.previewRestore(it) } }
+
     val today by vm.today.collectAsState()
     val week by vm.week.collectAsState()
     val habits by vm.habits.collectAsState()
     val stats by vm.stats.collectAsState()
     val settings by vm.settings.collectAsState()
+    val pendingRestore by vm.pendingRestore.collectAsState()
+    val backupMessage by vm.backupMessage.collectAsState()
+
+    // Every backup outcome is reported. Silence after a restore is how people lose a year of data
+    // without noticing.
+    val backupText = backupMessage?.let { stringResource(it.textRes()) }
+    LaunchedEffect(backupText) {
+        val text = backupText ?: return@LaunchedEffect
+        snackbar.showMessage(text)
+        vm.clearBackupMessage()
+    }
 
     TrackerTheme(
         palette = Palettes.byId(settings.paletteId),
@@ -75,6 +111,7 @@ fun TrackerApp(vm: TrackerViewModel = viewModel()) {
     ) {
         Scaffold(
             containerColor = theme.background,
+            snackbarHost = { SnackbarHost(snackbar) },
             bottomBar = { if (onATab) BottomBar(route) { nav.switchTo(it) } },
             floatingActionButton = {
                 if (route == ROUTE_TODAY || route == ROUTE_HABITS) {
@@ -88,6 +125,36 @@ fun TrackerApp(vm: TrackerViewModel = viewModel()) {
                 }
             }
         ) { padding ->
+            pendingRestore?.let { summary ->
+                AlertDialog(
+                    onDismissRequest = { vm.cancelRestore() },
+                    title = { Text(stringResource(R.string.restore_confirm_title)) },
+                    text = {
+                        Text(
+                            stringResource(
+                                R.string.restore_confirm_body,
+                                summary.habits,
+                                summary.completions,
+                                summary.days
+                            )
+                        )
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { vm.confirmRestore() }) {
+                            Text(stringResource(R.string.restore_confirm_action))
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { vm.cancelRestore() }) {
+                            Text(stringResource(R.string.restore_cancel))
+                        }
+                    },
+                    containerColor = theme.surface,
+                    titleContentColor = theme.ink,
+                    textContentColor = theme.ink2
+                )
+            }
+
             NavHost(
                 navController = nav,
                 startDestination = ROUTE_TODAY,
@@ -128,6 +195,9 @@ fun TrackerApp(vm: TrackerViewModel = viewModel()) {
                         onWeekStart = { vm.setWeekStart(it) },
                         onReminders = { vm.setReminders(it) },
                         onBatterySettings = { vm.requestBatteryExemption() },
+                        onExportJson = { exportJson.launch(backupFileName("json")) },
+                        onExportCsv = { exportCsv.launch(backupFileName("csv")) },
+                        onRestore = { pickBackup.launch(arrayOf("application/json", "text/plain", "*/*")) },
                         onBack = { nav.popBackStack() }
                     )
                 }
@@ -191,3 +261,19 @@ private fun BottomBar(route: String?, onPick: (String) -> Unit) = Row(
         }
     }
 }
+
+private suspend fun SnackbarHostState.showMessage(text: String) {
+    currentSnackbarData?.dismiss()
+    showSnackbar(text)
+}
+
+private fun BackupMessage.textRes() = when (this) {
+    BackupMessage.Exported -> R.string.backup_exported
+    BackupMessage.ExportFailed -> R.string.backup_export_failed
+    BackupMessage.Restored -> R.string.backup_restored
+    BackupMessage.RestoreFailed -> R.string.backup_restore_failed
+}
+
+/** tracker-backup-2026-08-25.json -- sorts by date in any file manager. */
+private fun backupFileName(extension: String) =
+    "tracker-backup-" + java.time.LocalDate.now() + "." + extension

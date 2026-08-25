@@ -117,6 +117,22 @@
     <string name="settings_streaks_title">מחמיצים אחד, והיום עדיין נספר</string>
     <string name="settings_streaks_body">מ־%1$d הרגלים ומעלה, החמצה אחת נסלחת — ביום קל יותר נדרש הכול. אתם מחזיקים עד %2$d הקפאות, שנפדות אוטומטית ביום גרוע, ו־%3$d ימים שנספרו מחזירים אחת. אין לזה מתג: זו העסקה.</string>
     <string name="settings_privacy">הכול נשאר בטלפון הזה. לאפליקציה אין בכלל הרשאת אינטרנט, כך שהיא לא יכולה להעלות את הנתונים שלכם גם אם תרצה.</string>
+    <string name="settings_data">הנתונים שלכם</string>
+    <string name="settings_export_json">ייצוא גיבוי</string>
+    <string name="settings_export_json_note">קובץ JSON אחד: כל ההרגלים, הסימונים, הימים והדירוגים.</string>
+    <string name="settings_export_csv">ייצוא כ־CSV</string>
+    <string name="settings_export_csv_note">שורה לכל סימון, בשביל גיליון.</string>
+    <string name="settings_restore">שחזור מגיבוי</string>
+    <string name="settings_restore_note">מחליף את כל מה שיש עכשיו באפליקציה.</string>
+    <string name="settings_data_privacy">הקובץ נשמר לאן שתפנו את בורר הקבצים. שום דבר לא נשלח לשום מקום.</string>
+    <string name="restore_confirm_title">להחליף הכול?</string>
+    <string name="restore_confirm_body">בגיבוי הזה יש %1$d הרגלים, %2$d סימונים ו־%3$d ימים סגורים. השחזור מחליף את מה שיש עכשיו — שחזור אינו מיזוג, כי שתי היסטוריות שמוזגו למחצה היו יוצרות רצפים שמעולם לא היו.</string>
+    <string name="restore_confirm_action">החלפה</string>
+    <string name="restore_cancel">להשאיר מה שיש</string>
+    <string name="backup_exported">הגיבוי נכתב.</string>
+    <string name="backup_export_failed">לא הצלחנו לכתוב את הקובץ.</string>
+    <string name="backup_restored">שוחזר.</string>
+    <string name="backup_restore_failed">לא ניתן לקרוא את הקובץ הזה כגיבוי.</string>
     <string name="settings_bidi_check">בדיקת דו־כיווניות</string>
     <string name="settings_bidi_note">בגרסאות פיתוח בלבד. כל שורה חייבת להיקרא נכון בשתי השפות: בלי מילה שקופצת לצד הלא נכון, בלי סימן פיסוק שנודד.</string>
 

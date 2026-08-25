@@ -47,14 +47,14 @@ Hard requirements from the original request:
 |---|---|
 | 0 · Toolchain | **DONE** — Android SDK, Gradle, JDK, Node all working |
 | 1 · Design canvas | **DONE** — published, awaiting Ido's visual edits (not blocking) |
-| 2 · Engine + data layer | **DONE** — 90 unit tests, all passing |
+| 2 · Engine + data layer | **DONE** — 94 unit tests, all passing |
 | 3 · Today screen + add/edit habit | **DONE** — plus Week and Habits pages (see "Page structure") |
 | 4 · Analytics screens | **DONE** — Stats screen; per-habit detail view deliberately deferred |
 | 5 · Settings | **DONE** — palette, appearance, week start, reminders, Samsung battery card |
 | 6 · Notifications | **DONE** — six slots, live countdown, boot rescheduling, Samsung battery card |
 | 7 · Widgets (1×1, 2×1) | **DONE** — one responsive widget: 1×1 ring, stretch to 2×1 for the streak |
 | 8 · Hebrew + bidi | **DONE** — full he translation, per-app language picker, bidi corpus on a debug screen |
-| 9 · Export/import | **NEXT** |
+| 9 · Export/import | **DONE** — JSON backup, CSV export, restore behind a confirmation |
 | 10 · GitHub repo + CI + APK distribution | **PARTLY** — repo live at https://github.com/IdoElbak/habit-tracker, pushed. CI + signed release APK still to do |
 | 11 · On-device verification | not started |
 
@@ -65,9 +65,9 @@ DayBoundaryTest      9      DueCalculatorTest   11
 HabitStrengthTest    9      MoodInsightsTest     9
 StatsWindowTest      9      StreakEngineTest    20
 DayCloserTest       11      TodayUiTest          6
-StatsTest            6
+StatsTest            6      BackupTest           4
                     ───────────────────────────────
-                    90 tests, 0 failures, 0 errors
+                    94 tests, 0 failures, 0 errors
 ```
 
 Run them with:
@@ -254,6 +254,11 @@ app/src/main/java/com/idoelbak/tracker/notify/
                           Samsung One UI has a nasty bug around. Each alarm books the next one,
                           so there is one pending intent, and it survives the app being killed.
     ReminderReceiver.kt   where alarms land, and where reminders come back after a reboot.
+
+app/src/main/java/com/idoelbak/tracker/data/Backup.kt
+    The whole database as one versioned JSON file, plus a CSV export. Dates travel as epoch
+    days, the same shape SQLite holds, so a backup cannot drift a day across timezones.
+    A restore REPLACES rather than merges, in one transaction, behind a confirmation dialog.
 
 app/src/main/java/com/idoelbak/tracker/data/Prefs.kt
     DataStore-backed Settings: paletteId, themeMode, weekStart. The week start is passed INTO

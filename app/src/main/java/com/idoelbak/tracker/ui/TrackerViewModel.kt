@@ -4,6 +4,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.idoelbak.tracker.core.model.Schedule
+import com.idoelbak.tracker.data.Backup
+import com.idoelbak.tracker.data.BackupSummary
+import com.idoelbak.tracker.data.Backups
 import com.idoelbak.tracker.data.Prefs
 import com.idoelbak.tracker.data.Settings
 import com.idoelbak.tracker.data.StatsPeriod
@@ -23,6 +26,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -31,6 +35,9 @@ import java.time.LocalDate
  * One view model for the whole app. It is three screens over one database -- splitting it per screen
  * would only mean building the same repository three times.
  */
+/** What to tell the user after a backup or a restore. The UI turns these into sentences. */
+enum class BackupMessage { Exported, ExportFailed, Restored, RestoreFailed }
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class TrackerViewModel(app: Application) : AndroidViewModel(app) {
 
@@ -62,6 +69,16 @@ class TrackerViewModel(app: Application) : AndroidViewModel(app) {
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     private val period = MutableStateFlow(StatsPeriod.MONTH)
+
+    /** A backup that has been read and checked, waiting for the user to say yes. */
+    private val pending = MutableStateFlow<Backup?>(null)
+
+    val pendingRestore: StateFlow<BackupSummary?> = pending
+        .map { it?.let(Backups::summarise) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    private val _backupMessage = MutableStateFlow<BackupMessage?>(null)
+    val backupMessage: StateFlow<BackupMessage?> = _backupMessage
 
     val stats: StateFlow<StatsUi> = combine(day, period) { (date, weekStart), chosen ->
         Triple(date, weekStart, chosen)
@@ -132,6 +149,53 @@ class TrackerViewModel(app: Application) : AndroidViewModel(app) {
             )
         }
     }
+
+    /**
+     * Writes a backup to wherever the user pointed the file picker. Everything goes through the
+     * Storage Access Framework, so the app needs no storage permission at all.
+     */
+    fun exportTo(uri: android.net.Uri, csv: Boolean) = viewModelScope.launch {
+        val app = getApplication<Application>()
+        val db = TrackerDatabase.get(app)
+        val text = if (csv) Backups.toCsv(db) else Backups.toJson(db, System.currentTimeMillis())
+        runCatching {
+            app.contentResolver.openOutputStream(uri)?.use { it.write(text.toByteArray()) }
+        }.onFailure { _backupMessage.value = BackupMessage.ExportFailed }
+            .onSuccess { _backupMessage.value = BackupMessage.Exported }
+    }
+
+    /** Reads and checks a backup, but changes nothing yet -- the user still has to confirm. */
+    fun previewRestore(uri: android.net.Uri) = viewModelScope.launch {
+        val app = getApplication<Application>()
+        val text = runCatching {
+            app.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
+        }.getOrNull()
+
+        if (text == null) {
+            _backupMessage.value = BackupMessage.RestoreFailed
+            return@launch
+        }
+        Backups.read(text)
+            .onSuccess { pending.value = it }
+            .onFailure { _backupMessage.value = BackupMessage.RestoreFailed }
+    }
+
+    fun cancelRestore() { pending.value = null }
+
+    fun confirmRestore() = viewModelScope.launch {
+        val backup = pending.value ?: return@launch
+        pending.value = null
+        val app = getApplication<Application>()
+        runCatching { Backups.restore(TrackerDatabase.get(app), backup) }
+            .onFailure { _backupMessage.value = BackupMessage.RestoreFailed }
+            .onSuccess {
+                _backupMessage.value = BackupMessage.Restored
+                refresh()
+                TrackerWidget().updateAll(app)
+            }
+    }
+
+    fun clearBackupMessage() { _backupMessage.value = null }
 
     fun currentDate(): LocalDate = date.value
 }

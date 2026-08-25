@@ -117,6 +117,22 @@
     <string name="settings_streaks_title">Miss one, the day still counts</string>
     <string name="settings_streaks_body">From %1$d habits due upward, one miss is forgiven — on a lighter day everything is required. You hold up to %2$d freezes, spent automatically on a bad day, and %3$d days that counted earn one back. There is no switch for this: it is the deal.</string>
     <string name="settings_privacy">Everything stays on this phone. The app has no internet permission at all, so it could not upload your habits even if it wanted to.</string>
+    <string name="settings_data">Your data</string>
+    <string name="settings_export_json">Export a backup</string>
+    <string name="settings_export_json_note">One JSON file: every habit, tick, day and rating.</string>
+    <string name="settings_export_csv">Export as CSV</string>
+    <string name="settings_export_csv_note">One row per tick, for a spreadsheet.</string>
+    <string name="settings_restore">Restore from a backup</string>
+    <string name="settings_restore_note">Replaces everything currently in the app.</string>
+    <string name="settings_data_privacy">The file goes wherever you point the picker. Nothing is uploaded.</string>
+    <string name="restore_confirm_title">Replace everything?</string>
+    <string name="restore_confirm_body">This backup holds %1$d habits, %2$d ticks and %3$d settled days. Restoring replaces what is in the app now — a restore is not a merge, because two half-merged histories would produce streaks that never happened.</string>
+    <string name="restore_confirm_action">Replace</string>
+    <string name="restore_cancel">Keep what I have</string>
+    <string name="backup_exported">Backup written.</string>
+    <string name="backup_export_failed">Could not write that file.</string>
+    <string name="backup_restored">Restored.</string>
+    <string name="backup_restore_failed">That file could not be read as a backup.</string>
     <string name="settings_bidi_check">Bidi check</string>
     <string name="settings_bidi_note">Debug builds only. Every line must read correctly in both languages: no word jumping to the wrong side, no punctuation drifting.</string>
 

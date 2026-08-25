@@ -89,6 +89,9 @@ fun SettingsScreen(
     onWeekStart: (DayOfWeek) -> Unit,
     onReminders: (Boolean) -> Unit,
     onBatterySettings: () -> Unit,
+    onExportJson: () -> Unit,
+    onExportCsv: () -> Unit,
+    onRestore: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) = LazyColumn(
@@ -340,6 +343,39 @@ fun SettingsScreen(
         }
     }
 
+    item {
+        Section(stringResource(R.string.settings_data)) {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .background(theme.surface, RoundedCornerShape(16.dp))
+            ) {
+                DataRow(
+                    title = stringResource(R.string.settings_export_json),
+                    note = stringResource(R.string.settings_export_json_note),
+                    onClick = onExportJson
+                )
+                Box(Modifier.fillMaxWidth().height(1.dp).background(theme.rule))
+                DataRow(
+                    title = stringResource(R.string.settings_export_csv),
+                    note = stringResource(R.string.settings_export_csv_note),
+                    onClick = onExportCsv
+                )
+                Box(Modifier.fillMaxWidth().height(1.dp).background(theme.rule))
+                DataRow(
+                    title = stringResource(R.string.settings_restore),
+                    note = stringResource(R.string.settings_restore_note),
+                    onClick = onRestore
+                )
+            }
+            Text(
+                stringResource(R.string.settings_data_privacy),
+                style = MaterialTheme.typography.bodySmall,
+                color = theme.muted
+            )
+        }
+    }
+
     if (BuildConfig.DEBUG) {
         item {
             Section(stringResource(R.string.settings_bidi_check)) {
@@ -374,6 +410,18 @@ fun SettingsScreen(
             color = theme.muted
         )
     }
+}
+
+@Composable
+private fun DataRow(title: String, note: String, onClick: () -> Unit) = Column(
+    Modifier
+        .fillMaxWidth()
+        .clickable(onClick = onClick)
+        .padding(16.dp, 14.dp),
+    verticalArrangement = Arrangement.spacedBy(2.dp)
+) {
+    Text(title, style = MaterialTheme.typography.bodyLarge, color = theme.ink)
+    Text(note, style = MaterialTheme.typography.bodySmall, color = theme.muted)
 }
 
 /** The design's pill switch, drawn rather than pulled from Material so it matches the palette. */

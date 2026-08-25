@@ -38,8 +38,18 @@ interface HabitDao {
     @Query("SELECT COALESCE(MAX(orderIndex), -1) + 1 FROM habits")
     suspend fun nextOrderIndex(): Int
 
+    @Query("SELECT * FROM habits ORDER BY id")
+    suspend fun allHabits(): List<HabitEntity>
+
     @Insert
     suspend fun insert(habit: HabitEntity): Long
+
+    @Insert
+    suspend fun insertAll(habits: List<HabitEntity>)
+
+    /** Restore only. Everything else archives. */
+    @Query("DELETE FROM habits")
+    suspend fun clear()
 
     @Update
     suspend fun update(habit: HabitEntity)
@@ -80,8 +90,17 @@ interface CompletionDao {
     @Query("SELECT EXISTS(SELECT 1 FROM completions WHERE habitId = :habitId AND date = :date)")
     suspend fun isDone(habitId: Long, date: LocalDate): Boolean
 
+    @Query("SELECT * FROM completions")
+    suspend fun allCompletions(): List<CompletionEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun tick(completion: CompletionEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(completions: List<CompletionEntity>)
+
+    @Query("DELETE FROM completions")
+    suspend fun clear()
 
     @Query("DELETE FROM completions WHERE habitId = :habitId AND date = :date")
     suspend fun untick(habitId: Long, date: LocalDate)
@@ -102,12 +121,22 @@ interface DayRecordDao {
     @Query("SELECT MAX(date) FROM day_records")
     suspend fun latestClosedDate(): LocalDate?
 
+    @Query("SELECT * FROM day_records ORDER BY date")
+    suspend fun allRecords(): List<DayRecordEntity>
+
     /**
      * Insert only -- a closed day is never rewritten. IGNORE rather than REPLACE is the mechanism
      * that makes past verdicts immutable.
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun close(record: DayRecordEntity): Long
+
+    /** Restore only -- the immutability rule protects a live database, not a wiped one. */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(records: List<DayRecordEntity>)
+
+    @Query("DELETE FROM day_records")
+    suspend fun clear()
 }
 
 @Dao
@@ -122,8 +151,17 @@ interface DayRatingDao {
     @Query("SELECT * FROM day_ratings WHERE date BETWEEN :from AND :to ORDER BY date")
     fun observeBetween(from: LocalDate, to: LocalDate): Flow<List<DayRatingEntity>>
 
+    @Query("SELECT * FROM day_ratings ORDER BY date")
+    suspend fun allRatings(): List<DayRatingEntity>
+
     @Upsert
     suspend fun put(rating: DayRatingEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(ratings: List<DayRatingEntity>)
+
+    @Query("DELETE FROM day_ratings")
+    suspend fun clear()
 }
 
 @Dao
