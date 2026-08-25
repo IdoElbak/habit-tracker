@@ -1,0 +1,171 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Figtree:wght@400;500;600;700&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Figtree", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #2E4A7D; } a:hover { color: #1F3459; }
+    .n { font-family: "Familjen Grotesk", "Figtree", sans-serif; font-variant-numeric: tabular-nums; }
+    .lbl { font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #767E8B; }
+    .grp { background: #FFFFFF; border-radius: 16px; display: flex; flex-direction: column; }
+    .row { display: flex; align-items: center; gap: 12px; padding: 14px 16px; min-height: 52px; }
+    .row + .row { border-top: 1px solid #F4F1E7; }
+    .rt { flex-grow: 1; font-size: 14.5px; font-weight: 500; }
+    .rv { font-size: 13.5px; color: #767E8B; }
+    .n-sw { display: flex; gap: 4px; flex-shrink: 0; }
+    .n-sw i { width: 13px; height: 13px; border-radius: 4px; display: block; }
+    .tog { width: 46px; height: 27px; border-radius: 999px; flex-shrink: 0; display: inline-flex; align-items: center; padding: 3px; }
+    .tog.on { background: #7A8B5A; justify-content: flex-end; }
+    .tog.off { background: #E0DBCE; }
+    .tog span { width: 21px; height: 21px; border-radius: 50%; background: #FFFFFF; display: block; }
+    .pal { border-radius: 13px; padding: 11px 12px; display: flex; flex-direction: column; gap: 8px; background: #FFFFFF; border: 1.5px solid transparent; }
+    .pal.on { border-color: #2E4A7D; }
+    .pn { font-size: 11.5px; font-weight: 500; color: #4E5765; line-height: 1.2; }
+  </style>
+</helmet>
+
+<div style="width: 390px; height: 1480px; background: #F4F0E6; color: #1D2430; display: flex; flex-direction: column; gap: 18px; padding: 28px 20px;">
+
+  <div class="n" style="font-size: 27px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.05;">Settings</div>
+
+  <div style="display: flex; flex-direction: column; gap: 9px;">
+    <div class="lbl">Theme</div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;">
+      <sc-for list="{{palettes}}" as="p" hint-placeholder-count="7">
+        <div style="{{p.cardStyle}}">
+          <span class="n-sw"><i style="{{p.a}}"></i><i style="{{p.b}}"></i><i style="{{p.c}}"></i></span>
+          <span style="{{p.nameStyle}}">{{p.name}}</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 9px;">
+    <div class="lbl">Appearance</div>
+    <div style="display: flex; gap: 3px; background: #E9E3D6; padding: 3px; border-radius: 999px;">
+      <div style="flex-grow: 1; text-align: center; font-size: 12.5px; font-weight: 600; color: #FFFFFF; padding: 8px 0; border-radius: 999px; background: #2E4A7D;">System</div>
+      <div style="flex-grow: 1; text-align: center; font-size: 12.5px; font-weight: 500; color: #767E8B; padding: 8px 0; border-radius: 999px;">Light</div>
+      <div style="flex-grow: 1; text-align: center; font-size: 12.5px; font-weight: 500; color: #767E8B; padding: 8px 0; border-radius: 999px;">Dark</div>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 9px;">
+    <div class="lbl">Language</div>
+    <div class="grp">
+      <div class="row">
+        <span class="rt">English</span>
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#2E4A7D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;" aria-hidden="true"><path d="M4.5 12.5 9.5 17.5 19.5 6.5"></path></svg>
+      </div>
+      <div class="row">
+        <span class="rt" dir="auto" style="unicode-bidi: isolate;">עברית</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 9px;">
+    <div class="lbl">Reminders</div>
+    <div class="grp">
+      <div class="row">
+        <span class="rt">Daily nudges</span>
+        <span class="tog on"><span></span></span>
+      </div>
+      <div class="row">
+        <span class="rt" style="font-weight: 400; color: #4E5765;">Times</span>
+        <span class="rv n">08:00 · 12:30 · 15:30 · 18:30</span>
+      </div>
+      <div class="row">
+        <span class="rt" style="font-weight: 400; color: #4E5765;">Countdown starts</span>
+        <span class="rv n">22:00</span>
+      </div>
+      <div class="row">
+        <span class="rt">Streak-save alert</span>
+        <span class="tog on"><span></span></span>
+      </div>
+      <div class="row">
+        <span class="rt">Silence once the day is done</span>
+        <span class="tog on"><span></span></span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 9px;">
+    <div class="lbl">Your day</div>
+    <div class="grp">
+      <div class="row">
+        <span class="rt" style="font-weight: 400; color: #4E5765;">Week starts</span>
+        <span class="rv">Sunday</span>
+      </div>
+      <div class="row">
+        <span class="rt" style="font-weight: 400; color: #4E5765;">Day ends at</span>
+        <span class="rv n">03:00</span>
+      </div>
+    </div>
+    <div style="font-size: 11px; color: #9AA0AB; line-height: 1.4; padding: 0 4px;">A tick at 01:30 still counts for the day before.</div>
+  </div>
+
+  <div style="background: #FFFFFF; border-radius: 16px; padding: 15px 16px; display: flex; gap: 12px; box-shadow: inset 0 0 0 1.5px #E0D9BE;">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#8A7A3A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px;" aria-hidden="true"><path d="M12 3.5 21.5 20H2.5z"></path><path d="M12 10v4M12 17h.01"></path></svg>
+    <div style="display: flex; flex-direction: column; gap: 9px; flex-grow: 1;">
+      <div style="font-size: 14px; font-weight: 600;">Keep reminders working</div>
+      <div style="font-size: 11.5px; color: #4E5765; line-height: 1.45;">Samsung puts unused apps to sleep, which silently kills reminders. Two taps stops that.</div>
+      <div style="align-self: flex-start; padding: 9px 16px; border-radius: 10px; background: #2E4A7D; color: #FFFFFF; font-size: 13px; font-weight: 600;">Fix it now</div>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 9px;">
+    <div class="lbl">Your data</div>
+    <div class="grp">
+      <div class="row">
+        <span class="rt" style="font-weight: 400; color: #4E5765;">Export a backup</span>
+        <span class="rv">JSON · CSV</span>
+      </div>
+      <div class="row">
+        <span class="rt" style="font-weight: 400; color: #4E5765;">Restore from a backup</span>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#B4AFA1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;" aria-hidden="true"><path d="M9.5 5 16.5 12l-7 7"></path></svg>
+      </div>
+    </div>
+    <div style="font-size: 11px; color: #9AA0AB; line-height: 1.4; padding: 0 4px;">Everything stays on this phone. Nothing is uploaded anywhere.</div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":390,"height":1480}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var defs = [
+      { name: 'Indigo & Sage',   on: true,  c: ['#2E4A7D', '#7A8B5A', '#F4F0E6'] },
+      { name: 'Navy & Teal',     on: false, c: ['#1B2A4A', '#1F9C92', '#F7F7F4'] },
+      { name: 'Blue & Plum',     on: false, c: ['#3A5BA0', '#7E5A78', '#EFEDEA'] },
+      { name: 'Midnight & Mint', on: false, c: ['#4C7DF0', '#4FD1A5', '#0E1520'] },
+      { name: 'Steel & Olive',   on: false, c: ['#40566E', '#6E7A3F', '#EFE7DA'] },
+      { name: 'Blue & Amber',    on: false, c: ['#2E4A7D', '#D99A2B', '#F6F2E9'] },
+      { name: 'Blue & Crimson',  on: false, c: ['#2E4A7D', '#B0453F', '#F3EFEA'] }
+    ];
+
+    function sw(hex) { return 'width:13px;height:13px;border-radius:4px;display:block;background:' + hex + ';box-shadow:inset 0 0 0 1px rgba(0,0,0,0.08);'; }
+
+    return {
+      palettes: defs.map(function (p) {
+        return {
+          name: p.name,
+          a: sw(p.c[0]), b: sw(p.c[1]), c: sw(p.c[2]),
+          cardStyle: 'border-radius:13px;padding:11px 12px;display:flex;flex-direction:column;gap:8px;background:#FFFFFF;border:1.5px solid '
+            + (p.on ? '#2E4A7D;' : 'transparent;'),
+          nameStyle: 'font-size:11.5px;line-height:1.2;'
+            + (p.on ? 'font-weight:600;color:#2E4A7D;' : 'font-weight:500;color:#4E5765;')
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

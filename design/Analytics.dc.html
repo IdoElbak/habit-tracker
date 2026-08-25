@@ -1,0 +1,236 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Figtree:wght@400;500;600;700&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Figtree", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #2E4A7D; } a:hover { color: #1F3459; }
+    .n { font-family: "Familjen Grotesk", "Figtree", sans-serif; font-variant-numeric: tabular-nums; }
+    .card { background: #FFFFFF; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+    .ct { font-size: 14.5px; font-weight: 600; letter-spacing: -0.005em; color: #1D2430; }
+    .cs { font-size: 11.5px; color: #767E8B; line-height: 1.35; }
+    .ax { font-size: 10px; fill: #9AA0AB; font-family: "Familjen Grotesk", sans-serif; font-variant-numeric: tabular-nums; }
+  </style>
+</helmet>
+
+<div style="width: 390px; height: 1420px; background: #F4F0E6; color: #1D2430; display: flex; flex-direction: column;">
+
+  <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 14px; padding: 28px 20px 0;">
+
+    <div class="n" style="font-size: 27px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.05;">Stats</div>
+
+    <div style="display: flex; gap: 3px; background: #E9E3D6; padding: 3px; border-radius: 999px;">
+      <div style="flex-grow: 1; text-align: center; font-size: 12.5px; font-weight: 500; color: #767E8B; padding: 7px 0; border-radius: 999px;">Week</div>
+      <div style="flex-grow: 1; text-align: center; font-size: 12.5px; font-weight: 600; color: #FFFFFF; padding: 7px 0; border-radius: 999px; background: #2E4A7D;">Month</div>
+      <div style="flex-grow: 1; text-align: center; font-size: 12.5px; font-weight: 500; color: #767E8B; padding: 7px 0; border-radius: 999px;">Year</div>
+      <div style="flex-grow: 1; text-align: center; font-size: 12.5px; font-weight: 500; color: #767E8B; padding: 7px 0; border-radius: 999px;">All</div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;">
+      <div style="background: #FFFFFF; border-radius: 14px; padding: 13px 12px; display: flex; flex-direction: column; gap: 3px;">
+        <div class="n" style="font-size: 25px; font-weight: 700; letter-spacing: -0.02em; line-height: 1;">78<span style="font-size: 15px; color: #767E8B;">%</span></div>
+        <div style="font-size: 10.5px; color: #767E8B; line-height: 1.25;">completed<br>in August</div>
+      </div>
+      <div style="background: #FFFFFF; border-radius: 14px; padding: 13px 12px; display: flex; flex-direction: column; gap: 3px;">
+        <div class="n" style="font-size: 25px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; color: #2E4A7D;">14</div>
+        <div style="font-size: 10.5px; color: #767E8B; line-height: 1.25;">day streak<br>best 23</div>
+      </div>
+      <div style="background: #FFFFFF; border-radius: 14px; padding: 13px 12px; display: flex; flex-direction: column; gap: 3px;">
+        <div class="n" style="font-size: 25px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; color: #7A8B5A;">9</div>
+        <div style="font-size: 10.5px; color: #767E8B; line-height: 1.25;">perfect days<br>nothing missed</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display: flex; flex-direction: column; gap: 3px;">
+        <div class="ct">Habit strength</div>
+        <div class="cs">Dips when you miss, recovers when you practise. One bad day cannot zero it.</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 9px;">
+        <sc-for list="{{strength}}" as="s" hint-placeholder-count="7">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="width: 118px; flex-shrink: 0; font-size: 12px; color: #4E5765; line-height: 1.2;">{{s.name}}</span>
+            <span style="flex-grow: 1; height: 8px; background: #F0ECE0; border-radius: 4px; overflow: hidden; display: block;">
+              <span style="{{s.bar}}"></span>
+            </span>
+            <span class="n" style="width: 30px; flex-shrink: 0; text-align: right; font-size: 12px; font-weight: 600; color: #1D2430;">{{s.pct}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;">
+        <div style="display: flex; flex-direction: column; gap: 3px;">
+          <div class="ct">Consistency</div>
+          <div class="cs">Every day since 26 May</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 5px; flex-shrink: 0; padding-top: 2px;">
+          <span style="font-size: 9.5px; color: #9AA0AB;">less</span>
+          <span style="width: 9px; height: 9px; border-radius: 2px; background: #F0ECE0;"></span>
+          <span style="width: 9px; height: 9px; border-radius: 2px; background: #D4DCBF;"></span>
+          <span style="width: 9px; height: 9px; border-radius: 2px; background: #B2C094;"></span>
+          <span style="width: 9px; height: 9px; border-radius: 2px; background: #8FA16C;"></span>
+          <span style="width: 9px; height: 9px; border-radius: 2px; background: #6B7C47;"></span>
+          <span style="font-size: 9.5px; color: #9AA0AB;">more</span>
+        </div>
+      </div>
+      <div style="display: flex; gap: 7px; align-items: flex-start;">
+        <div style="display: flex; flex-direction: column; gap: 4px; padding-top: 14px; flex-shrink: 0;">
+          <span style="height: 13px;"></span>
+          <span style="height: 13px; font-size: 9px; color: #9AA0AB; line-height: 13px;">M</span>
+          <span style="height: 13px;"></span>
+          <span style="height: 13px; font-size: 9px; color: #9AA0AB; line-height: 13px;">W</span>
+          <span style="height: 13px;"></span>
+          <span style="height: 13px; font-size: 9px; color: #9AA0AB; line-height: 13px;">F</span>
+          <span style="height: 13px;"></span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 5px; flex-grow: 1;">
+          <div style="display: flex; gap: 4px; font-size: 9px; color: #9AA0AB;">
+            <span style="width: 68px;">Jun</span><span style="width: 85px;">Jul</span><span>Aug</span>
+          </div>
+          <div style="display: grid; grid-template-rows: repeat(7, 13px); grid-auto-flow: column; grid-auto-columns: 13px; gap: 4px;">
+            <sc-for list="{{heat}}" as="c" hint-placeholder-count="91">
+              <i style="{{c.s}}"></i>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display: flex; flex-direction: column; gap: 3px;">
+        <div class="ct">Which day you drop</div>
+        <div class="cs">Completion rate by weekday, this month.</div>
+      </div>
+      <svg width="322" height="136" viewBox="0 0 322 136" role="img" aria-label="Completion rate by weekday: Sunday 82 percent, Monday 88, Tuesday 85, Wednesday 79, Thursday 81, Friday 66, Saturday 58 percent.">
+        <line x1="0" y1="112" x2="322" y2="112" stroke="#E6E0D2" stroke-width="1"></line>
+        <line x1="0" y1="67" x2="322" y2="67" stroke="#F0ECE0" stroke-width="1"></line>
+        <sc-for list="{{weekdays}}" as="w" hint-placeholder-count="7">
+          <path d="{{w.d}}" fill="{{w.fill}}"></path>
+        </sc-for>
+        <sc-for list="{{weekdays}}" as="w" hint-placeholder-count="7">
+          <text x="{{w.cx}}" y="128" text-anchor="middle" class="ax">{{w.label}}</text>
+        </sc-for>
+        <text x="{{satCx}}" y="{{satLabelY}}" text-anchor="middle" class="ax" style="fill: #4E5765; font-weight: 600;">58%</text>
+      </svg>
+      <div style="display: flex; align-items: center; gap: 8px; background: #F7F4EA; border-radius: 10px; padding: 10px 12px;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2E4A7D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8.2v4.4M12 16h.01"></path></svg>
+        <span style="font-size: 11.5px; color: #4E5765; line-height: 1.35;">Saturday is your weakest day by 8 points.</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display: flex; flex-direction: column; gap: 3px;">
+        <div class="ct">Weekly completion</div>
+        <div class="cs">Last 8 weeks.</div>
+      </div>
+      <svg width="322" height="128" viewBox="0 0 322 128" role="img" aria-label="Weekly completion rate over the last eight weeks, rising from 62 percent to 78 percent.">
+        <line x1="8" y1="10" x2="314" y2="10" stroke="#F0ECE0" stroke-width="1"></line>
+        <line x1="8" y1="55" x2="314" y2="55" stroke="#F0ECE0" stroke-width="1"></line>
+        <line x1="8" y1="100" x2="314" y2="100" stroke="#E6E0D2" stroke-width="1"></line>
+        <text x="318" y="13" class="ax" text-anchor="end" style="fill: #C0BCB0;">100%</text>
+        <path d="M8 44.2 50 36.1 92 38.8 134 32.5 176 27.1 218 30.7 260 24.4 302 29.8 L302 100 L8 100 Z" fill="#7A8B5A" opacity="0.1"></path>
+        <path d="M8 44.2 50 36.1 92 38.8 134 32.5 176 27.1 218 30.7 260 24.4 302 29.8" fill="none" stroke="#7A8B5A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <circle cx="302" cy="29.8" r="4.5" fill="#7A8B5A" stroke="#FFFFFF" stroke-width="2"></circle>
+        <text x="8" y="118" class="ax">8 wks ago</text>
+        <text x="302" y="118" class="ax" text-anchor="end">this week</text>
+      </svg>
+    </div>
+
+  </div>
+
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 20px 22px; background: #FFFFFF; border-top: 1px solid #E6E0D2; margin-top: 14px;">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; flex-grow: 1; color: #9AA0AB;">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6.5 5.6 8.1 8.5 5"></path><path d="M4 12.5 5.6 14.1 8.5 11"></path><path d="M4 18.5 5.6 20.1 8.5 17"></path><path d="M12 6.5h8M12 12.5h8M12 18.5h8"></path></svg>
+      <span style="font-size: 10.5px; font-weight: 500;">Today</span>
+    </div>
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; flex-grow: 1; color: #2E4A7D;">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V13M10 20V4M16 20V9M22 20V15"></path></svg>
+      <span style="font-size: 10.5px; font-weight: 600;">Stats</span>
+    </div>
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; flex-grow: 1; color: #9AA0AB;">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.2"></circle><path d="M12 2.8v3M12 18.2v3M21.2 12h-3M5.8 12h-3M18.5 5.5l-2.1 2.1M7.6 16.4l-2.1 2.1M18.5 18.5l-2.1-2.1M7.6 7.6 5.5 5.5"></path></svg>
+      <span style="font-size: 10.5px; font-weight: 500;">Settings</span>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":390,"height":1420}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var strengthData = [
+      { name: 'Walk >10,000 steps', v: 92 },
+      { name: 'Learn Russian',      v: 88 },
+      { name: 'Cold shower',        v: 81 },
+      { name: 'Workout',            v: 76 },
+      { name: '7-8 hours sleep',    v: 71 },
+      { name: 'Meditate 5 min',     v: 54 },
+      { name: 'Read ~10 pages',     v: 38 }
+    ];
+    var strength = strengthData.map(function (s) {
+      return {
+        name: s.name,
+        pct: s.v + '%',
+        bar: 'display:block;height:8px;border-radius:4px;background:#7A8B5A;width:' + s.v + '%;'
+      };
+    });
+
+    var ramp = ['#F0ECE0', '#D4DCBF', '#B2C094', '#8FA16C', '#6B7C47'];
+    var seed = 7;
+    function rnd() { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; }
+    var heat = [];
+    for (var row = 0; row < 7; row++) {
+      for (var col = 0; col < 13; col++) {
+        var lvl = Math.round(rnd() * 2.1 + (col / 12) * 2.0);
+        if (lvl > 4) { lvl = 4; }
+        if (lvl < 0) { lvl = 0; }
+        if (col === 12 && row > 2) { lvl = 0; }
+        heat.push({ s: 'width:13px;height:13px;border-radius:2.5px;display:block;background:' + ramp[lvl] + ';' });
+      }
+    }
+    var reordered = [];
+    for (var c = 0; c < 13; c++) {
+      for (var r = 0; r < 7; r++) { reordered.push(heat[r * 13 + c]); }
+    }
+
+    var wd = [
+      { label: 'S', v: 82 }, { label: 'M', v: 88 }, { label: 'T', v: 85 },
+      { label: 'W', v: 79 }, { label: 'T', v: 81 }, { label: 'F', v: 66 }, { label: 'S', v: 58 }
+    ];
+    var barW = 34, gap = 14, base = 112, maxH = 92, r = 4;
+    var weekdays = wd.map(function (d, i) {
+      var x = i * (barW + gap);
+      var h = (d.v / 100) * maxH;
+      var y = base - h;
+      return {
+        label: d.label,
+        cx: x + barW / 2,
+        fill: '#7A8B5A',
+        d: 'M' + x + ' ' + base + ' V' + (y + r) + ' Q' + x + ' ' + y + ' ' + (x + r) + ' ' + y
+           + ' H' + (x + barW - r) + ' Q' + (x + barW) + ' ' + y + ' ' + (x + barW) + ' ' + (y + r)
+           + ' V' + base + ' Z'
+      };
+    });
+
+    return {
+      strength: strength,
+      heat: reordered,
+      weekdays: weekdays,
+      satCx: 6 * (barW + gap) + barW / 2,
+      satLabelY: base - (58 / 100) * maxH - 7
+    };
+  }
+}
+</script>
+</body>
+</html>

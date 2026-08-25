@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Figtree:wght@400;500;600;700&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Figtree", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #7B9BD6; } a:hover { color: #9DB5E2; }
+    .n { font-family: "Familjen Grotesk", "Figtree", sans-serif; font-variant-numeric: tabular-nums; }
+    .row { display: flex; align-items: center; gap: 12px; background: #1F242D; border-radius: 12px; padding: 0 13px; height: 48px; }
+    .box { width: 22px; height: 22px; border-radius: 7px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; }
+    .nm { flex-grow: 1; font-size: 14px; font-weight: 500; line-height: 1.2; }
+    .dn { color: #737C8B; text-decoration: line-through; text-decoration-thickness: 1px; }
+    .wk { display: flex; gap: 3px; flex-shrink: 0; }
+    .wk i { width: 5px; height: 5px; border-radius: 50%; display: inline-block; background: #333944; }
+    .wk i.h { background: #9DB37A; }
+    .wk i.t { background: transparent; box-shadow: inset 0 0 0 1.5px #7B9BD6; }
+    .wk i.f { background: #262C36; }
+    .lbl { font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #8A93A3; }
+  </style>
+</helmet>
+
+<div style="width: 390px; height: 844px; background: #16181D; color: #E8EAEE; display: flex; flex-direction: column;">
+
+  <div style="flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; gap: 16px; padding: 24px 20px 0;">
+
+    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;">
+      <div style="display: flex; flex-direction: column; gap: 2px;">
+        <div class="n" style="font-size: 27px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.05;">Today</div>
+        <div style="font-size: 13px; color: #8A93A3;">Tuesday, 25 August</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 6px; background: #7B9BD6; color: #12151A; padding: 8px 13px; border-radius: 999px;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.8c2.6 3.1 4.7 5.5 4.7 8.4a4.7 4.7 0 1 1-9.4 0c0-1.5.5-2.7 1.4-3.8.2 1.5.9 2.4 1.9 2.7-.3-2.7.4-5.2 1.4-7.3z"></path></svg>
+        <span class="n" style="font-size: 15px; font-weight: 700;">14</span>
+      </div>
+    </div>
+
+    <div style="background: #1F242D; border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 14px;">
+      <svg width="54" height="54" viewBox="0 0 54 54" style="flex-shrink: 0;" aria-hidden="true">
+        <circle cx="27" cy="27" r="22" fill="none" stroke="#333944" stroke-width="5"></circle>
+        <circle cx="27" cy="27" r="22" fill="none" stroke="#9DB37A" stroke-width="5" stroke-linecap="round" stroke-dasharray="118.5 138.2" transform="rotate(-90 27 27)"></circle>
+      </svg>
+      <div style="display: flex; flex-direction: column; gap: 3px; flex-grow: 1;">
+        <div class="n" style="font-size: 19px; font-weight: 700; letter-spacing: -0.01em;">6 of 7 done</div>
+        <div style="font-size: 12.5px; color: #D98C6A;">1 left · 1h 12m to go</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 5px; background: #2A3122; padding: 6px 10px; border-radius: 999px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9DB37A" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3v18M4.5 7.5l15 9M19.5 7.5l-15 9"></path></svg>
+        <span class="n" style="font-size: 13px; font-weight: 700; color: #9DB37A;">2</span>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 9px;">
+      <div class="lbl">Due today</div>
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+
+        <div class="row">
+          <span class="box" style="background: #9DB37A; border: 1.8px solid #9DB37A;"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#16181D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.4 6.6 11.5 12.5 4.8"></path></svg></span>
+          <span class="nm dn">Workout</span>
+          <span class="wk"><i></i><i class="h"></i><i class="h"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></span>
+        </div>
+
+        <div class="row">
+          <span class="box" style="background: #9DB37A; border: 1.8px solid #9DB37A;"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#16181D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.4 6.6 11.5 12.5 4.8"></path></svg></span>
+          <span class="nm dn">Walk &gt;10,000 steps</span>
+          <span class="wk"><i class="h"></i><i class="h"></i><i class="h"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></span>
+        </div>
+
+        <div class="row">
+          <span class="box" style="background: #9DB37A; border: 1.8px solid #9DB37A;"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#16181D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.4 6.6 11.5 12.5 4.8"></path></svg></span>
+          <span class="nm dn">7-8 hours sleep</span>
+          <span class="wk"><i class="h"></i><i></i><i class="h"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></span>
+        </div>
+
+        <div class="row" style="background: #232B38; box-shadow: inset 0 0 0 1px #3A4761;">
+          <span class="box" style="background: transparent; border: 1.8px solid #7B9BD6;"></span>
+          <span class="nm" style="color: #E8EAEE;">Read ~10 pages</span>
+          <span class="wk"><i class="h"></i><i></i><i class="t"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></span>
+        </div>
+
+        <div class="row">
+          <span class="box" style="background: #9DB37A; border: 1.8px solid #9DB37A;"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#16181D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.4 6.6 11.5 12.5 4.8"></path></svg></span>
+          <span class="nm dn">Learn Russian</span>
+          <span class="wk"><i class="h"></i><i class="h"></i><i class="h"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></span>
+        </div>
+
+        <div class="row">
+          <span class="box" style="background: #9DB37A; border: 1.8px solid #9DB37A;"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#16181D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.4 6.6 11.5 12.5 4.8"></path></svg></span>
+          <span class="nm dn">Meditate 5 min</span>
+          <span class="wk"><i></i><i class="h"></i><i class="h"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></span>
+        </div>
+
+        <div class="row">
+          <span class="box" style="background: #9DB37A; border: 1.8px solid #9DB37A;"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#16181D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.4 6.6 11.5 12.5 4.8"></path></svg></span>
+          <span class="nm dn">Cold shower</span>
+          <span class="wk"><i class="h"></i><i class="h"></i><i class="h"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></span>
+        </div>
+
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 9px;">
+      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px;">
+        <div class="lbl">This week</div>
+        <div style="font-size: 11px; color: #737C8B;">optional today</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <div style="display: flex; align-items: center; gap: 12px; background: #1B1F27; border: 1px solid #2A303A; border-radius: 12px; padding: 0 13px; height: 48px;">
+          <span style="width: 22px; height: 22px; border-radius: 7px; border: 1.8px solid #444C5A; flex-shrink: 0;"></span>
+          <span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 14px; font-weight: 500; line-height: 1.2;">Draw ~20 minutes</span>
+            <span class="n" style="font-size: 11px; color: #8A93A3;">1 of 3 this week</span>
+          </span>
+          <span class="wk"><i class="h"></i><i></i><i></i></span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px; background: #1B1F27; border: 1px solid #2A303A; border-radius: 12px; padding: 0 13px; height: 48px;">
+          <span style="width: 22px; height: 22px; border-radius: 7px; border: 1.8px solid #444C5A; flex-shrink: 0;"></span>
+          <span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 14px; font-weight: 500; line-height: 1.2;">Learn &gt;3 hours</span>
+            <span class="n" style="font-size: 11px; color: #8A93A3;">2 of 3 this week</span>
+          </span>
+          <span class="wk"><i class="h"></i><i class="h"></i><i></i></span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 20px 22px; background: #1F242D; border-top: 1px solid #2A303A;">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; flex-grow: 1; color: #7B9BD6;">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6.5 5.6 8.1 8.5 5"></path><path d="M4 12.5 5.6 14.1 8.5 11"></path><path d="M4 18.5 5.6 20.1 8.5 17"></path><path d="M12 6.5h8M12 12.5h8M12 18.5h8"></path></svg>
+      <span style="font-size: 10.5px; font-weight: 600;">Today</span>
+    </div>
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; flex-grow: 1; color: #737C8B;">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V13M10 20V4M16 20V9M22 20V15"></path></svg>
+      <span style="font-size: 10.5px; font-weight: 500;">Stats</span>
+    </div>
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; flex-grow: 1; color: #737C8B;">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.2"></circle><path d="M12 2.8v3M12 18.2v3M21.2 12h-3M5.8 12h-3M18.5 5.5l-2.1 2.1M7.6 16.4l-2.1 2.1M18.5 18.5l-2.1-2.1M7.6 7.6 5.5 5.5"></path></svg>
+      <span style="font-size: 10.5px; font-weight: 500;">Settings</span>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {}
+</script>
+</body>
+</html>

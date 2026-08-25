@@ -1,0 +1,37 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html",          "x": 0,    "y": 0,    "w": 390,  "h": 844,  "title": "Today" },
+    { "file": "TodayDark.dc.html",     "x": 510,  "y": 0,    "w": 390,  "h": 844,  "title": "Today — dark, 22:48" },
+    { "file": "Analytics.dc.html",     "x": 1020, "y": 0,    "w": 390,  "h": 1420, "title": "Stats" },
+    { "file": "HabitDetail.dc.html",   "x": 1530, "y": 0,    "w": 390,  "h": 1120, "title": "Habit detail" },
+    { "file": "AddHabit.dc.html",      "x": 2040, "y": 0,    "w": 390,  "h": 880,  "title": "Add habit" },
+    { "file": "Settings.dc.html",      "x": 2550, "y": 0,    "w": 390,  "h": 1480, "title": "Settings" },
+    { "file": "Widgets.dc.html",       "x": 0,    "y": 1620, "w": 660,  "h": 540,  "title": "Widgets" },
+    { "file": "Notifications.dc.html", "x": 780,  "y": 1620, "w": 440,  "h": 1120,  "title": "Notifications" },
+    { "file": "Tokens.dc.html",        "x": 0,    "y": 2900, "w": 1000, "h": 800,  "title": "Build sheet" }
+  ],
+  "annotations": [
+    {
+      "id": "note-screens",
+      "x": 0,
+      "y": -150,
+      "w": 620,
+      "text": "SCREENS\nIndigo & Sage, the default of seven themes. Dark mode is the same layout — second frame.\n\nThe Today screen is live: tap the checkboxes and the ring, the count and the strike-throughs all respond."
+    },
+    {
+      "id": "note-widgets",
+      "x": 0,
+      "y": 1470,
+      "w": 620,
+      "text": "WIDGETS & NUDGES\nThe 1x1 is the one you asked for. The 2x1 is drawn alongside so it can be swapped in later without a rebuild.\n\nThe red countdown is a live counting-down timer, not a static string — it redraws every second from 22:00."
+    },
+    {
+      "id": "note-tokens",
+      "x": 0,
+      "y": 2750,
+      "w": 620,
+      "text": "BUILD SHEET\nThe exact values the Compose theme gets built from, plus the Hebrew acceptance test.\n\nThe left column of that test is what WhatsApp does. The right is what this app has to do."
+    }
+  ],
+  "launch": { "view": "canvas" }
+}

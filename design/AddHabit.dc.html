@@ -1,0 +1,127 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Figtree:wght@400;500;600;700&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Figtree", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #2E4A7D; } a:hover { color: #1F3459; }
+    .n { font-family: "Familjen Grotesk", "Figtree", sans-serif; font-variant-numeric: tabular-nums; }
+    .lbl { font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #767E8B; }
+    .card { background: #FFFFFF; border-radius: 16px; padding: 6px 16px; }
+    .chip { padding: 9px 15px; border-radius: 999px; font-size: 13px; font-weight: 500; border: 1px solid #E6E0D2; background: #FFFFFF; color: #4E5765; }
+    .chip.on { background: #2E4A7D; border-color: #2E4A7D; color: #FFFFFF; font-weight: 600; }
+    .opt { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 14px; background: #FFFFFF; }
+    .radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #C3C9D2; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; }
+    .radio.on { border-color: #2E4A7D; }
+    .radio.on::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: #2E4A7D; }
+    .day { width: 40px; height: 40px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; font-size: 12.5px; font-weight: 600; background: #F4F1E7; color: #B4AFA1; }
+    .day.on { background: #2E4A7D; color: #FFFFFF; }
+  </style>
+</helmet>
+
+<div style="width: 390px; height: 880px; background: #F4F0E6; color: #1D2430; display: flex; flex-direction: column; gap: 20px; padding: 24px 20px 28px;">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+    <span style="font-size: 14px; font-weight: 500; color: #767E8B;">Cancel</span>
+    <span class="n" style="font-size: 17px; font-weight: 700; letter-spacing: -0.01em;">New habit</span>
+    <span style="font-size: 14px; font-weight: 600; color: #2E4A7D;">Save</span>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 9px;">
+    <div class="lbl">Name</div>
+    <div style="background: #FFFFFF; border-radius: 14px; padding: 15px 16px; border: 1.5px solid #2E4A7D; display: flex; align-items: center; gap: 2px;">
+      <span style="font-size: 16px; font-weight: 500;">Workout</span>
+      <span style="width: 1.5px; height: 19px; background: #2E4A7D; display: inline-block;"></span>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 9px;">
+    <div class="lbl">Category</div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+      <span class="chip on">Health</span>
+      <span class="chip">Learning</span>
+      <span class="chip">Mind</span>
+      <span class="chip" style="color: #767E8B;">+ New</span>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 9px;">
+    <div class="lbl">How often</div>
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+
+      <div class="opt">
+        <span class="radio"></span>
+        <span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px;">
+          <span style="font-size: 14.5px; font-weight: 500;">Every day</span>
+          <span style="font-size: 11.5px; color: #767E8B;">Due all seven days</span>
+        </span>
+      </div>
+
+      <div class="opt">
+        <span class="radio"></span>
+        <span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px;">
+          <span style="font-size: 14.5px; font-weight: 500;">Times per week</span>
+          <span style="font-size: 11.5px; color: #767E8B;">Any days you like</span>
+        </span>
+        <span style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
+          <span style="width: 30px; height: 30px; border-radius: 9px; background: #F4F1E7; display: inline-flex; align-items: center; justify-content: center; color: #B4AFA1; font-size: 17px; line-height: 1;">&minus;</span>
+          <span class="n" style="font-size: 16px; font-weight: 700; color: #B4AFA1; min-width: 10px; text-align: center;">3</span>
+          <span style="width: 30px; height: 30px; border-radius: 9px; background: #F4F1E7; display: inline-flex; align-items: center; justify-content: center; color: #B4AFA1; font-size: 17px; line-height: 1;">+</span>
+        </span>
+      </div>
+
+      <div style="background: #FFFFFF; border-radius: 14px; padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 14px; box-shadow: inset 0 0 0 1.5px #2E4A7D;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span class="radio on"></span>
+          <span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 14.5px; font-weight: 600;">On these days</span>
+            <span style="font-size: 11.5px; color: #767E8B;">Reminded each morning it comes round</span>
+          </span>
+        </div>
+        <div style="display: flex; justify-content: space-between; gap: 4px;">
+          <span class="day">S</span>
+          <span class="day on">M</span>
+          <span class="day">T</span>
+          <span class="day on">W</span>
+          <span class="day on">T</span>
+          <span class="day">F</span>
+          <span class="day on">S</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 9px;">
+    <div class="lbl">Its own reminder</div>
+    <div style="background: #FFFFFF; border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 12px;">
+      <span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px;">
+        <span style="font-size: 14.5px; font-weight: 500;">Nudge me at a set time</span>
+        <span style="font-size: 11.5px; color: #767E8B;">On top of the daily reminders</span>
+      </span>
+      <span style="width: 46px; height: 27px; border-radius: 999px; background: #E0DBCE; flex-shrink: 0; display: inline-flex; align-items: center; padding: 3px;">
+        <span style="width: 21px; height: 21px; border-radius: 50%; background: #FFFFFF;"></span>
+      </span>
+    </div>
+  </div>
+
+  <div style="margin-top: auto; display: flex; flex-direction: column; gap: 10px;">
+    <div style="height: 52px; border-radius: 14px; background: #2E4A7D; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600;">Add habit</div>
+    <div style="font-size: 11px; color: #9AA0AB; text-align: center; line-height: 1.4;">Starts counting from today. Nothing you have already tracked changes.</div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":390,"height":880}}'>
+class Component extends DCLogic {}
+</script>
+</body>
+</html>

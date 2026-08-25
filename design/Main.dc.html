@@ -1,0 +1,194 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Figtree:wght@400;500;600;700&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Figtree", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #2E4A7D; } a:hover { color: #1F3459; }
+    .n { font-family: "Familjen Grotesk", "Figtree", sans-serif; font-variant-numeric: tabular-nums; }
+  </style>
+</helmet>
+
+<div style="width: 390px; height: 844px; background: #F4F0E6; color: #1D2430; display: flex; flex-direction: column;">
+
+  <div style="flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; gap: 16px; padding: 24px 20px 0;">
+
+    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;">
+      <div style="display: flex; flex-direction: column; gap: 2px;">
+        <div class="n" style="font-size: 27px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.05;">Today</div>
+        <div style="font-size: 13px; color: #767E8B;">Tuesday, 25 August</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 6px; background: #2E4A7D; color: #FFFFFF; padding: 8px 13px; border-radius: 999px;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.8c2.6 3.1 4.7 5.5 4.7 8.4a4.7 4.7 0 1 1-9.4 0c0-1.5.5-2.7 1.4-3.8.2 1.5.9 2.4 1.9 2.7-.3-2.7.4-5.2 1.4-7.3z"></path></svg>
+        <span class="n" style="font-size: 15px; font-weight: 700;">14</span>
+      </div>
+    </div>
+
+    <div style="background: #FFFFFF; border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 14px;">
+      <svg width="54" height="54" viewBox="0 0 54 54" style="flex-shrink: 0;" aria-hidden="true">
+        <circle cx="27" cy="27" r="22" fill="none" stroke="#E6E0D2" stroke-width="5"></circle>
+        <circle cx="27" cy="27" r="22" fill="none" stroke="#7A8B5A" stroke-width="5" stroke-linecap="round" stroke-dasharray="{{ringDash}}" transform="rotate(-90 27 27)"></circle>
+      </svg>
+      <div style="display: flex; flex-direction: column; gap: 3px; flex-grow: 1;">
+        <div class="n" style="font-size: 19px; font-weight: 700; letter-spacing: -0.01em;">{{doneCount}} of {{dueCount}} done</div>
+        <div style="font-size: 12.5px; color: #767E8B;">{{leftLabel}}</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 5px; background: #EDF0E5; padding: 6px 10px; border-radius: 999px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7A8B5A" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3v18M4.5 7.5l15 9M19.5 7.5l-15 9"></path></svg>
+        <span class="n" style="font-size: 13px; font-weight: 700; color: #5F6E45;">2</span>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 9px;">
+      <div style="font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #767E8B;">Due today</div>
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <sc-for list="{{due}}" as="h" hint-placeholder-count="7">
+          <div onClick="{{h.toggle}}" style="display: flex; align-items: center; gap: 12px; background: #FFFFFF; border-radius: 12px; padding: 0 13px; height: 48px; cursor: pointer;">
+            <span style="{{h.boxStyle}}">
+              <sc-if value="{{h.done}}" hint-placeholder-val="{{true}}">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.4 6.6 11.5 12.5 4.8"></path></svg>
+              </sc-if>
+            </span>
+            <span style="{{h.nameStyle}}">{{h.name}}</span>
+            <span style="display: flex; gap: 3px; flex-shrink: 0;">
+              <sc-for list="{{h.week}}" as="d" hint-placeholder-count="7">
+                <i style="{{d.s}}"></i>
+              </sc-for>
+            </span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 9px;">
+      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px;">
+        <div style="font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #767E8B;">This week</div>
+        <div style="font-size: 11px; color: #9AA0AB;">optional today</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <sc-for list="{{weekly}}" as="w" hint-placeholder-count="2">
+          <div style="display: flex; align-items: center; gap: 12px; background: #FAF7EF; border: 1px solid #E6E0D2; border-radius: 12px; padding: 0 13px; height: 48px;">
+            <span style="width: 22px; height: 22px; border-radius: 7px; border: 1.8px solid #C3C9D2; flex-shrink: 0;"></span>
+            <span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px;">
+              <span style="font-size: 14px; font-weight: 500; line-height: 1.2;">{{w.name}}</span>
+              <span class="n" style="font-size: 11px; color: #767E8B;">{{w.progress}}</span>
+            </span>
+            <span style="display: flex; gap: 3px; flex-shrink: 0;">
+              <sc-for list="{{w.pips}}" as="p" hint-placeholder-count="3">
+                <i style="{{p.s}}"></i>
+              </sc-for>
+            </span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 20px 22px; background: #FFFFFF; border-top: 1px solid #E6E0D2;">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; flex-grow: 1; color: #2E4A7D;">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6.5 5.6 8.1 8.5 5"></path><path d="M4 12.5 5.6 14.1 8.5 11"></path><path d="M4 18.5 5.6 20.1 8.5 17"></path><path d="M12 6.5h8M12 12.5h8M12 18.5h8"></path></svg>
+      <span style="font-size: 10.5px; font-weight: 600;">Today</span>
+    </div>
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; flex-grow: 1; color: #9AA0AB;">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V13M10 20V4M16 20V9M22 20V15"></path></svg>
+      <span style="font-size: 10.5px; font-weight: 500;">Stats</span>
+    </div>
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; flex-grow: 1; color: #9AA0AB;">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.2"></circle><path d="M12 2.8v3M12 18.2v3M21.2 12h-3M5.8 12h-3M18.5 5.5l-2.1 2.1M7.6 16.4l-2.1 2.1M18.5 18.5l-2.1-2.1M7.6 7.6 5.5 5.5"></path></svg>
+      <span style="font-size: 10.5px; font-weight: 500;">Settings</span>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      done: { workout: true, walk: true, sleep: true, read: false, russian: true, meditate: false, cold: false }
+    };
+  }
+
+  dot(kind) {
+    var base = 'width:5px;height:5px;border-radius:50%;display:inline-block;';
+    if (kind === 'hit')   return base + 'background:#7A8B5A;';
+    if (kind === 'miss')  return base + 'background:#D9D4C6;';
+    if (kind === 'today') return base + 'background:transparent;box-shadow:inset 0 0 0 1.5px #2E4A7D;';
+    return base + 'background:#EAE5D8;';
+  }
+
+  renderVals() {
+    var self = this;
+    var d = this.state.done;
+
+    var defs = [
+      { key: 'workout',  name: 'Workout',            past: ['miss', 'hit'] },
+      { key: 'walk',     name: 'Walk >10,000 steps', past: ['hit', 'hit'] },
+      { key: 'sleep',    name: '7-8 hours sleep',    past: ['hit', 'miss'] },
+      { key: 'read',     name: 'Read ~10 pages',     past: ['hit', 'miss'] },
+      { key: 'russian',  name: 'Learn Russian',      past: ['hit', 'hit'] },
+      { key: 'meditate', name: 'Meditate 5 min',     past: ['miss', 'hit'] },
+      { key: 'cold',     name: 'Cold shower',        past: ['hit', 'hit'] }
+    ];
+
+    var due = defs.map(function (h) {
+      var on = !!d[h.key];
+      var week = h.past.map(function (k) { return { s: self.dot(k) }; });
+      week.push({ s: self.dot(on ? 'hit' : 'today') });
+      for (var i = 0; i < 4; i++) { week.push({ s: self.dot('future') }); }
+
+      return {
+        key: h.key,
+        name: h.name,
+        done: on,
+        week: week,
+        boxStyle: 'width:22px;height:22px;border-radius:7px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;'
+          + (on ? 'background:#7A8B5A;border:1.8px solid #7A8B5A;' : 'background:transparent;border:1.8px solid #C3C9D2;'),
+        nameStyle: 'flex-grow:1;font-size:14px;font-weight:500;line-height:1.2;'
+          + (on ? 'color:#9AA0AB;text-decoration:line-through;text-decoration-thickness:1px;' : 'color:#1D2430;'),
+        toggle: function () {
+          var next = Object.assign({}, self.state.done);
+          next[h.key] = !next[h.key];
+          self.setState({ done: next });
+        }
+      };
+    });
+
+    var doneCount = due.filter(function (h) { return h.done; }).length;
+    var left = due.length - doneCount;
+    var circ = 2 * Math.PI * 22;
+
+    var weekly = [
+      { name: 'Draw ~20 minutes', progress: '1 of 3 this week', fill: 1, total: 3 },
+      { name: 'Learn >3 hours',   progress: '2 of 3 this week', fill: 2, total: 3 }
+    ].map(function (w) {
+      var pips = [];
+      for (var i = 0; i < w.total; i++) {
+        pips.push({ s: 'width:5px;height:5px;border-radius:50%;display:inline-block;background:' + (i < w.fill ? '#7A8B5A' : '#D9D4C6') + ';' });
+      }
+      return { name: w.name, progress: w.progress, pips: pips };
+    });
+
+    return {
+      due: due,
+      weekly: weekly,
+      doneCount: doneCount,
+      dueCount: due.length,
+      leftLabel: left === 0 ? 'All done - streak safe' : (left + ' left · 6h to go'),
+      ringDash: (circ * doneCount / due.length).toFixed(1) + ' ' + circ.toFixed(1)
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Figtree:wght@400;500;600;700&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Figtree", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #2E4A7D; } a:hover { color: #1F3459; }
+    .n { font-family: "Familjen Grotesk", "Figtree", sans-serif; font-variant-numeric: tabular-nums; }
+    .col { display: flex; flex-direction: column; gap: 14px; }
+    .card { background: #FFFFFF; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .ct { font-size: 13.5px; font-weight: 600; color: #1D2430; }
+    .cs { font-size: 11px; color: #767E8B; line-height: 1.4; }
+    .tk { display: flex; align-items: center; gap: 9px; font-size: 11px; }
+    .tk i { width: 20px; height: 20px; border-radius: 6px; flex-shrink: 0; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.09); }
+    .tk b { font-weight: 500; color: #4E5765; width: 74px; flex-shrink: 0; }
+    .tk code { font-family: "Familjen Grotesk", monospace; color: #9AA0AB; font-variant-numeric: tabular-nums; }
+    .bd { display: flex; flex-direction: column; gap: 5px; padding: 10px 12px; border-radius: 10px; background: #FAF8F1; }
+    .bl { font-size: 9.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9AA0AB; }
+  </style>
+</helmet>
+
+<div style="width: 1000px; height: 800px; background: #F4F0E6; color: #1D2430; padding: 26px; display: flex; flex-direction: column; gap: 16px;">
+
+  <div style="display: flex; flex-direction: column; gap: 4px;">
+    <div class="n" style="font-size: 21px; font-weight: 700; letter-spacing: -0.015em;">Build sheet</div>
+    <div style="font-size: 12px; color: #767E8B;">The exact values the Compose theme is built from. Indigo &amp; Sage is the default of seven.</div>
+  </div>
+
+  <div style="display: flex; gap: 16px; flex-grow: 1; align-items: flex-start;">
+
+    <div class="col" style="width: 250px; flex-shrink: 0;">
+      <div class="card">
+        <div class="ct">Light</div>
+        <div style="display: flex; flex-direction: column; gap: 7px;">
+          <div class="tk"><i style="background: #F4F0E6;"></i><b>background</b><code>#F4F0E6</code></div>
+          <div class="tk"><i style="background: #FFFFFF;"></i><b>surface</b><code>#FFFFFF</code></div>
+          <div class="tk"><i style="background: #FAF7EF;"></i><b>surfaceAlt</b><code>#FAF7EF</code></div>
+          <div class="tk"><i style="background: #2E4A7D;"></i><b>primary</b><code>#2E4A7D</code></div>
+          <div class="tk"><i style="background: #7A8B5A;"></i><b>success</b><code>#7A8B5A</code></div>
+          <div class="tk"><i style="background: #1D2430;"></i><b>ink</b><code>#1D2430</code></div>
+          <div class="tk"><i style="background: #4E5765;"></i><b>ink2</b><code>#4E5765</code></div>
+          <div class="tk"><i style="background: #767E8B;"></i><b>muted</b><code>#767E8B</code></div>
+          <div class="tk"><i style="background: #D9D4C6;"></i><b>track</b><code>#D9D4C6</code></div>
+          <div class="tk"><i style="background: #E6E0D2;"></i><b>rule</b><code>#E6E0D2</code></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ct">Dark</div>
+        <div style="display: flex; flex-direction: column; gap: 7px;">
+          <div class="tk"><i style="background: #16181D;"></i><b>background</b><code>#16181D</code></div>
+          <div class="tk"><i style="background: #1F242D;"></i><b>surface</b><code>#1F242D</code></div>
+          <div class="tk"><i style="background: #262C36;"></i><b>surfaceAlt</b><code>#262C36</code></div>
+          <div class="tk"><i style="background: #7B9BD6;"></i><b>primary</b><code>#7B9BD6</code></div>
+          <div class="tk"><i style="background: #9DB37A;"></i><b>success</b><code>#9DB37A</code></div>
+          <div class="tk"><i style="background: #E8EAEE;"></i><b>ink</b><code>#E8EAEE</code></div>
+          <div class="tk"><i style="background: #B4BBC7;"></i><b>ink2</b><code>#B4BBC7</code></div>
+          <div class="tk"><i style="background: #8A93A3;"></i><b>muted</b><code>#8A93A3</code></div>
+          <div class="tk"><i style="background: #333944;"></i><b>track</b><code>#333944</code></div>
+          <div class="tk"><i style="background: #2A303A;"></i><b>rule</b><code>#2A303A</code></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col" style="width: 290px; flex-shrink: 0;">
+      <div class="card">
+        <div style="display: flex; flex-direction: column; gap: 3px;">
+          <div class="ct">Type</div>
+          <div class="cs">Familjen Grotesk for numbers and titles, Figtree for everything else. Both ship in <span class="n">res/font</span>.</div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 11px;">
+          <div style="display: flex; align-items: baseline; gap: 10px;">
+            <span class="n" style="font-size: 30px; font-weight: 700; letter-spacing: -0.02em; line-height: 1;">14</span>
+            <span style="font-size: 10px; color: #9AA0AB;">streak · Grotesk 700 / 34</span>
+          </div>
+          <div style="display: flex; align-items: baseline; gap: 10px;">
+            <span class="n" style="font-size: 22px; font-weight: 700; letter-spacing: -0.02em;">Today</span>
+            <span style="font-size: 10px; color: #9AA0AB;">screen title · 27</span>
+          </div>
+          <div style="display: flex; align-items: baseline; gap: 10px;">
+            <span style="font-size: 14.5px; font-weight: 600;">Habit strength</span>
+            <span style="font-size: 10px; color: #9AA0AB;">card title · 14.5</span>
+          </div>
+          <div style="display: flex; align-items: baseline; gap: 10px;">
+            <span style="font-size: 14px; font-weight: 500;">Walk &gt;10,000 steps</span>
+            <span style="font-size: 10px; color: #9AA0AB;">row · 14</span>
+          </div>
+          <div style="display: flex; align-items: baseline; gap: 10px;">
+            <span style="font-size: 12.5px; color: #4E5765;">Dips when you miss.</span>
+            <span style="font-size: 10px; color: #9AA0AB;">body · 12.5</span>
+          </div>
+          <div style="display: flex; align-items: baseline; gap: 10px;">
+            <span style="font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #767E8B;">Due today</span>
+            <span style="font-size: 10px; color: #9AA0AB;">overline · 10.5</span>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ct">Shape &amp; spacing</div>
+        <div style="display: flex; flex-direction: column; gap: 8px; font-size: 11.5px; color: #4E5765;">
+          <div style="display: flex; justify-content: space-between;"><span>checkbox</span><span class="n" style="color: #9AA0AB;">22dp · r7</span></div>
+          <div style="display: flex; justify-content: space-between;"><span>habit row</span><span class="n" style="color: #9AA0AB;">48dp · r12</span></div>
+          <div style="display: flex; justify-content: space-between;"><span>card</span><span class="n" style="color: #9AA0AB;">r16</span></div>
+          <div style="display: flex; justify-content: space-between;"><span>widget</span><span class="n" style="color: #9AA0AB;">r20</span></div>
+          <div style="display: flex; justify-content: space-between;"><span>pill</span><span class="n" style="color: #9AA0AB;">r999</span></div>
+          <div style="display: flex; justify-content: space-between;"><span>screen padding</span><span class="n" style="color: #9AA0AB;">20dp</span></div>
+          <div style="display: flex; justify-content: space-between;"><span>min hit target</span><span class="n" style="color: #9AA0AB;">48dp</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ct">Heatmap ramp</div>
+        <div style="display: flex; gap: 5px;">
+          <span style="flex-grow: 1; height: 26px; border-radius: 5px; background: #F0ECE0;"></span>
+          <span style="flex-grow: 1; height: 26px; border-radius: 5px; background: #D4DCBF;"></span>
+          <span style="flex-grow: 1; height: 26px; border-radius: 5px; background: #B2C094;"></span>
+          <span style="flex-grow: 1; height: 26px; border-radius: 5px; background: #8FA16C;"></span>
+          <span style="flex-grow: 1; height: 26px; border-radius: 5px; background: #6B7C47;"></span>
+        </div>
+        <div class="cs">One hue, light to dark. Never a rainbow, and a missed day is the palest step, never red.</div>
+      </div>
+    </div>
+
+    <div class="col" style="flex-grow: 1;">
+      <div class="card">
+        <div style="display: flex; flex-direction: column; gap: 3px;">
+          <div class="ct">Hebrew acceptance test</div>
+          <div class="cs">These seven strings are the pass/fail bar. Left is what WhatsApp and Outlook do. Right is what the app must do — <span class="n">BidiFormatter.unicodeWrap</span> plus <span class="n">TextDirection.Content</span>.</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;">
+          <div class="bl">Unisolated — wrong</div>
+          <div class="bl">Isolated — correct</div>
+
+          <div class="bd" style="background: #FBF2F1;">
+            <span dir="ltr" style="font-size: 13px; unicode-bidi: normal;">האם קראתי היום?</span>
+          </div>
+          <div class="bd">
+            <span dir="auto" style="font-size: 13px; unicode-bidi: isolate;">האם קראתי היום?</span>
+          </div>
+
+          <div class="bd" style="background: #FBF2F1;">
+            <span dir="ltr" style="font-size: 13px; unicode-bidi: normal;">לקרוא 10 pages ביום</span>
+          </div>
+          <div class="bd">
+            <span dir="auto" style="font-size: 13px; unicode-bidi: isolate;">לקרוא 10 pages ביום</span>
+          </div>
+
+          <div class="bd" style="background: #FBF2F1;">
+            <span dir="ltr" style="font-size: 13px; unicode-bidi: normal;">ללכת 10,000 צעדים</span>
+          </div>
+          <div class="bd">
+            <span dir="auto" style="font-size: 13px; unicode-bidi: isolate;">ללכת 10,000 צעדים</span>
+          </div>
+
+          <div class="bd" style="background: #FBF2F1;">
+            <span dir="ltr" style="font-size: 13px; unicode-bidi: normal;">מדיטציה (5 min) בבוקר</span>
+          </div>
+          <div class="bd">
+            <span dir="auto" style="font-size: 13px; unicode-bidi: isolate;">מדיטציה (5 min) בבוקר</span>
+          </div>
+
+          <div class="bd" style="background: #FBF2F1;">
+            <span dir="ltr" style="font-size: 13px; unicode-bidi: normal;">ללמוד Russian</span>
+          </div>
+          <div class="bd">
+            <span dir="auto" style="font-size: 13px; unicode-bidi: isolate;">ללמוד Russian</span>
+          </div>
+
+          <div class="bd" style="background: #FBF2F1;">
+            <span dir="rtl" style="font-size: 13px; unicode-bidi: normal;">Workout אימון 3x</span>
+          </div>
+          <div class="bd">
+            <span dir="auto" style="font-size: 13px; unicode-bidi: isolate;">Workout אימון 3x</span>
+          </div>
+
+          <div class="bd" style="background: #FBF2F1;">
+            <span dir="rtl" style="font-size: 13px; unicode-bidi: normal;">Read ספר daily!</span>
+          </div>
+          <div class="bd">
+            <span dir="auto" style="font-size: 13px; unicode-bidi: isolate;">Read ספר daily!</span>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 9px; background: #F7F4EA; border-radius: 10px; padding: 11px 12px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2E4A7D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px;" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8.2v4.4M12 16h.01"></path></svg>
+          <span style="font-size: 11px; color: #4E5765; line-height: 1.5;">Watch the question mark and the exclamation mark especially — an unisolated run throws terminal punctuation to the far end of the line. That single bug is what makes mixed-language messages unreadable in most apps.</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ct">Layout direction</div>
+        <div class="cs">The whole UI mirrors with the app language — the back arrow, the checkbox side, the bottom nav order, the progress ring sweep. Every padding is <span class="n">start</span>/<span class="n">end</span>, never <span class="n">left</span>/<span class="n">right</span>.</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":1000,"height":800}}'>
+class Component extends DCLogic {}
+</script>
+</body>
+</html>
