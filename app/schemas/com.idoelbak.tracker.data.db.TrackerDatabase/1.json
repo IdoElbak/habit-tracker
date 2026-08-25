@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "a3f1e3ccfe8e82a38815a8647ee53faa",
+    "identityHash": "1e11be7c58740df057657ad8b028f589",
     "entities": [
       {
         "tableName": "categories",
@@ -309,7 +309,7 @@
       },
       {
         "tableName": "streak_state",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `currentStreak` INTEGER NOT NULL, `bestStreak` INTEGER NOT NULL, `perfectDays` INTEGER NOT NULL, `freezes` INTEGER NOT NULL, `perfectRun` INTEGER NOT NULL, `lastClosedDate` INTEGER, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `currentStreak` INTEGER NOT NULL, `bestStreak` INTEGER NOT NULL, `perfectDays` INTEGER NOT NULL, `freezes` INTEGER NOT NULL, `cleanDays` INTEGER NOT NULL, `lastClosedDate` INTEGER, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -342,8 +342,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "perfectRun",
-            "columnName": "perfectRun",
+            "fieldPath": "cleanDays",
+            "columnName": "cleanDays",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -363,7 +363,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a3f1e3ccfe8e82a38815a8647ee53faa')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1e11be7c58740df057657ad8b028f589')"
     ]
   }
 }

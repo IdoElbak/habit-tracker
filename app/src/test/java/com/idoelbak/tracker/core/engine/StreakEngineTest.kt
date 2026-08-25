@@ -83,7 +83,7 @@ class StreakEngineTest {
         assertTrue(out.freezeSpent)
         assertEquals("a frozen day is survived, not earned", 14, out.state.currentStreak)
         assertEquals(1, out.state.freezes)
-        assertEquals("progress toward the next freeze resets", 0, out.state.perfectRun)
+        assertEquals("progress toward the next freeze survives", 5, out.state.cleanDays)
     }
 
     @Test
@@ -117,42 +117,54 @@ class StreakEngineTest {
     }
 
     @Test
-    fun `a freeze comes back after exactly seven perfect days`() {
+    fun `a freeze comes back after exactly seven days that counted`() {
         var state = fresh(streak = 0, freezes = 0, run = 0)
         repeat(6) {
             val out = StreakEngine.closeDay(state, dueCount = 5, doneCount = 5)
             state = out.state
             assertFalse("no freeze before the seventh day", out.freezeEarned)
         }
-        assertEquals(6, state.perfectRun)
+        assertEquals(6, state.cleanDays)
         assertEquals(0, state.freezes)
 
         val seventh = StreakEngine.closeDay(state, dueCount = 5, doneCount = 5)
         assertTrue(seventh.freezeEarned)
         assertEquals(1, seventh.state.freezes)
-        assertEquals(0, seventh.state.perfectRun)
+        assertEquals(0, seventh.state.cleanDays)
     }
 
     @Test
-    fun `days saved by the allowance do not buy a freeze back`() {
-        // Seven days that each leaned on the allowance keep the streak, but earn nothing back.
+    fun `a day saved by the allowance still counts toward the next freeze`() {
         var state = fresh(streak = 10, freezes = 0, run = 0)
-        repeat(7) {
-            val out = StreakEngine.closeDay(state, dueCount = 5, doneCount = 4)
-            assertEquals(DayVerdict.COMPLETE, out.verdict)
-            assertFalse("only perfect days count toward a freeze", out.freezeEarned)
-            state = out.state
-        }
-        assertEquals(0, state.perfectRun)
-        assertEquals(0, state.freezes)
-        assertEquals("the streak itself still ran", 17, state.currentStreak)
+        repeat(6) { state = StreakEngine.closeDay(state, dueCount = 5, doneCount = 4).state }
+        assertEquals("a day that counted is a day that counted", 6, state.cleanDays)
 
-        // A complete day in the middle of a perfect run holds the count rather than wiping it.
-        repeat(6) { state = StreakEngine.closeDay(state, dueCount = 5, doneCount = 5).state }
-        state = StreakEngine.closeDay(state, dueCount = 5, doneCount = 4).state
-        assertEquals(6, state.perfectRun)
-        val seventh = StreakEngine.closeDay(state, dueCount = 5, doneCount = 5)
+        val seventh = StreakEngine.closeDay(state, dueCount = 5, doneCount = 4)
+        assertEquals(DayVerdict.COMPLETE, seventh.verdict)
         assertTrue(seventh.freezeEarned)
+        assertEquals(1, seventh.state.freezes)
+    }
+
+    @Test
+    fun `spending a freeze keeps the progress toward the next one`() {
+        // Six days in the bank, then a day bad enough to need a freeze.
+        var state = fresh(streak = 20, freezes = 1, run = 6)
+        val bad = StreakEngine.closeDay(state, dueCount = 11, doneCount = 8)
+        assertEquals(DayVerdict.FROZEN, bad.verdict)
+        assertEquals("the bad day costs the freeze, not the six days behind the next one", 6, bad.state.cleanDays)
+        state = bad.state
+
+        // So the very next day that counts brings the freeze straight back.
+        val next = StreakEngine.closeDay(state, dueCount = 11, doneCount = 11)
+        assertTrue(next.freezeEarned)
+        assertEquals(1, next.state.freezes)
+    }
+
+    @Test
+    fun `breaking the streak is the only thing that wipes the progress`() {
+        val out = StreakEngine.closeDay(fresh(streak = 20, freezes = 0, run = 6), dueCount = 11, doneCount = 8)
+        assertEquals(DayVerdict.BROKEN, out.verdict)
+        assertEquals(0, out.state.cleanDays)
     }
 
     @Test
@@ -163,7 +175,7 @@ class StreakEngineTest {
     }
 
     @Test
-    fun `spending a freeze then running perfect earns it back in two weeks`() {
+    fun `spending a freeze then running clean earns it back in two weeks`() {
         // The recovery Ido described: two bad days, then back where you were.
         var state = fresh(streak = 14, best = 23, freezes = 2)
         state = StreakEngine.closeDay(state, dueCount = 11, doneCount = 8).state
@@ -175,7 +187,7 @@ class StreakEngineTest {
 
         repeat(7) { state = StreakEngine.closeDay(state, dueCount = 11, doneCount = 11).state }
         assertEquals(2, state.freezes)
-        assertEquals("14 perfect days on top of the surviving streak", 28, state.currentStreak)
+        assertEquals("14 clean days on top of the surviving streak", 28, state.currentStreak)
     }
 
     // ---- at-risk signal ---------------------------------------------------------------------

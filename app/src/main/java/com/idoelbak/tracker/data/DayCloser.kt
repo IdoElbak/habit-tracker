@@ -41,7 +41,7 @@ class DayCloser(
             bestStreak = stored.bestStreak,
             perfectDays = stored.perfectDays,
             freezes = stored.freezes,
-            perfectRun = stored.perfectRun
+            cleanDays = stored.cleanDays
         )
 
         val firstOpen = stored.lastClosedDate?.plusDays(1) ?: earliestInterestingDay(today) ?: return 0
@@ -78,7 +78,7 @@ class DayCloser(
                 bestStreak = state.bestStreak,
                 perfectDays = state.perfectDays,
                 freezes = state.freezes,
-                perfectRun = state.perfectRun,
+                cleanDays = state.cleanDays,
                 lastClosedDate = today.minusDays(1)
             )
         )

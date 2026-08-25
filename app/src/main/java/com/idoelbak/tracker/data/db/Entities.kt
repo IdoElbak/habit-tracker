@@ -108,7 +108,7 @@ data class StreakStateEntity(
     val bestStreak: Int = 0,
     val perfectDays: Int = 0,
     val freezes: Int = 2,
-    val perfectRun: Int = 0,
+    val cleanDays: Int = 0,
     val lastClosedDate: LocalDate? = null
 ) {
     companion object {

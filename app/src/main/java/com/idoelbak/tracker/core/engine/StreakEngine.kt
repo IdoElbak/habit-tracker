@@ -27,10 +27,12 @@ data class StreakState(
     val perfectDays: Int = 0,
     val freezes: Int = StreakEngine.STARTING_FREEZES,
     /**
-     * Perfect days banked since the last freeze was spent -- 7 of them restore one freeze.
-     * A day saved by the allowance neither adds to this nor wipes it; only a failed day resets it.
+     * Days that counted, banked since the last freeze was earned -- 7 of them restore one freeze.
+     * A day saved by the allowance counts, and spending a freeze does not wipe the progress:
+     * a bad day costs you the freeze, not the fortnight of work behind the next one.
+     * Only actually breaking the streak resets it.
      */
-    val perfectRun: Int = 0
+    val cleanDays: Int = 0
 )
 
 data class DayOutcome(
@@ -51,13 +53,13 @@ data class DayOutcome(
  *    so the allowance does not apply and everything is required.
  *  - **A freeze** is for a genuinely bad day. It preserves the streak at its current length rather
  *    than extending it -- no work was done, so no day is gained. Freezes are scarce: two at most,
- *    and one comes back only after seven perfect days.
+ *    and one comes back only after seven days that counted.
  */
 object StreakEngine {
 
     const val MAX_FREEZES = 2
     const val STARTING_FREEZES = 2
-    const val PERFECT_DAYS_PER_FREEZE = 7
+    const val CLEAN_DAYS_PER_FREEZE = 7
 
     /** Below this many due, a single miss is too large a share of the day to forgive. */
     const val ALLOWANCE_MIN_DUE = 4
@@ -83,23 +85,20 @@ object StreakEngine {
         }
     }
 
-    /**
-     * The day counted: extend the streak, and -- only if it was perfect -- bank progress toward the
-     * next freeze. Leaning on the allowance keeps the streak alive but does not buy back a freeze.
-     */
+    /** The day counted: extend the streak, and bank progress toward the next freeze. */
     private fun qualified(previous: StreakState, verdict: DayVerdict, allowance: Int): DayOutcome {
         val streak = previous.currentStreak + 1
         var freezes = previous.freezes
-        var perfectRun = previous.perfectRun + if (verdict == DayVerdict.PERFECT) 1 else 0
+        var cleanDays = previous.cleanDays + 1
         var earned = false
 
-        if (perfectRun >= PERFECT_DAYS_PER_FREEZE && freezes < MAX_FREEZES) {
+        if (cleanDays >= CLEAN_DAYS_PER_FREEZE && freezes < MAX_FREEZES) {
             freezes += 1
-            perfectRun = 0
+            cleanDays = 0
             earned = true
-        } else if (perfectRun >= PERFECT_DAYS_PER_FREEZE) {
+        } else if (cleanDays >= CLEAN_DAYS_PER_FREEZE) {
             // Already holding the maximum; roll the counter so it does not run away.
-            perfectRun = 0
+            cleanDays = 0
         }
 
         return DayOutcome(
@@ -109,7 +108,7 @@ object StreakEngine {
                 bestStreak = maxOf(previous.bestStreak, streak),
                 perfectDays = previous.perfectDays + if (verdict == DayVerdict.PERFECT) 1 else 0,
                 freezes = freezes,
-                perfectRun = perfectRun
+                cleanDays = cleanDays
             ),
             allowanceApplied = allowance,
             freezeSpent = false,
@@ -117,10 +116,13 @@ object StreakEngine {
         )
     }
 
-    /** A freeze absorbed the day. The streak holds where it is; it does not grow. */
+    /**
+     * A freeze absorbed the day. The streak holds where it is; it does not grow. Progress toward
+     * the next freeze is kept -- the bad day costs the freeze, nothing else.
+     */
     private fun frozen(previous: StreakState, allowance: Int) = DayOutcome(
         verdict = DayVerdict.FROZEN,
-        state = previous.copy(freezes = previous.freezes - 1, perfectRun = 0),
+        state = previous.copy(freezes = previous.freezes - 1),
         allowanceApplied = allowance,
         freezeSpent = true,
         freezeEarned = false
@@ -131,7 +133,7 @@ object StreakEngine {
         state = previous.copy(
             currentStreak = 0,
             bestStreak = maxOf(previous.bestStreak, previous.currentStreak),
-            perfectRun = 0
+            cleanDays = 0
         ),
         allowanceApplied = allowance,
         freezeSpent = false,
