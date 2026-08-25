@@ -38,6 +38,7 @@ fun HabitsScreen(
     onUnarchive: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val locale = currentLocale()
     val active = habits.filter { it.isActive }
     val archived = habits.filter { !it.isActive }
 
@@ -94,7 +95,7 @@ fun HabitsScreen(
                         color = theme.ink
                     )
                     Text(
-                        scheduleLabel(habit),
+                        scheduleLabel(habit, locale),
                         style = MaterialTheme.typography.bodySmall,
                         color = theme.muted
                     )
@@ -141,12 +142,12 @@ fun HabitsScreen(
 private fun label(habit: HabitEntity) = listOfNotNull(habit.emoji, habit.name).joinToString(" ")
 
 /** "Every day", "3× per week", "Sun Tue Thu". */
-private fun scheduleLabel(habit: HabitEntity): String = when (habit.scheduleType) {
+private fun scheduleLabel(habit: HabitEntity, locale: Locale): String = when (habit.scheduleType) {
     ScheduleType.DAILY -> "Every day"
     ScheduleType.TIMES_PER_WEEK -> "${habit.timesPerWeek}× per week — any days"
-    ScheduleType.SPECIFIC_DAYS -> weekdaysFrom(habit.weekdayMask)
+    ScheduleType.SPECIFIC_DAYS -> weekdaysFrom(habit.weekdayMask, locale)
 }
 
-private fun weekdaysFrom(mask: Int): String = DayOfWeek.entries
+private fun weekdaysFrom(mask: Int, locale: Locale): String = DayOfWeek.entries
     .filter { mask and (1 shl (it.value - 1)) != 0 }
-    .joinToString(" ") { it.getDisplayName(TextStyle.SHORT, Locale.getDefault()) }
+    .joinToString(" ") { it.getDisplayName(TextStyle.SHORT, locale) }

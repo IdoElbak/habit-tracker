@@ -27,12 +27,12 @@ import com.idoelbak.tracker.core.engine.DayBoundary
 import com.idoelbak.tracker.core.engine.StreakEngine
 import com.idoelbak.tracker.data.Settings
 import com.idoelbak.tracker.data.ThemeMode
+import com.idoelbak.tracker.notify.Reminders
 import com.idoelbak.tracker.ui.theme.Palette
 import com.idoelbak.tracker.ui.theme.Palettes
 import com.idoelbak.tracker.ui.theme.theme
 import java.time.DayOfWeek
 import java.time.format.TextStyle
-import java.util.Locale
 
 private val WeekStartChoices = listOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY, DayOfWeek.MONDAY)
 
@@ -46,6 +46,8 @@ fun SettingsScreen(
     onPalette: (String) -> Unit,
     onThemeMode: (ThemeMode) -> Unit,
     onWeekStart: (DayOfWeek) -> Unit,
+    onReminders: (Boolean) -> Unit,
+    onBatterySettings: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) = LazyColumn(
@@ -119,6 +121,74 @@ fun SettingsScreen(
     }
 
     item {
+        Section("Reminders") {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .background(theme.surface, RoundedCornerShape(16.dp))
+            ) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable { onReminders(!settings.remindersEnabled) }
+                        .padding(16.dp, 14.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Text("Nudge me", style = MaterialTheme.typography.bodyLarge, color = theme.ink)
+                        Text(
+                            Reminders.SLOTS.joinToString(" · ") { "%02d:%02d".format(it.hour, it.minute) },
+                            style = MaterialTheme.typography.bodySmall,
+                            color = theme.muted
+                        )
+                    }
+                    Toggle(settings.remindersEnabled)
+                }
+                Box(Modifier.fillMaxWidth().height(1.dp).background(theme.rule))
+                Text(
+                    "From 22:00 the last one turns into a live countdown, and everything goes quiet " +
+                        "the moment the day is finished.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = theme.muted,
+                    modifier = Modifier.padding(16.dp, 12.dp)
+                )
+            }
+
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .background(theme.surfaceAlt, RoundedCornerShape(16.dp))
+                    .border(1.dp, theme.rule, RoundedCornerShape(16.dp))
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    "Keep reminders working",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = theme.ink
+                )
+                Text(
+                    "Samsung puts unused apps to sleep, which silently kills reminders. Exempt this " +
+                        "app from battery optimisation, then check Settings → Battery → Background " +
+                        "usage limits and remove Tracker from Sleeping apps.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = theme.muted
+                )
+                Text(
+                    "Fix it now",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = theme.onPrimary,
+                    modifier = Modifier
+                        .background(theme.primary, CircleShape)
+                        .clickable(onClick = onBatterySettings)
+                        .padding(horizontal = 16.dp, vertical = 10.dp)
+                )
+            }
+        }
+    }
+
+    item {
         Section("Your day") {
             Column(
                 Modifier
@@ -138,10 +208,11 @@ fun SettingsScreen(
                         color = theme.ink,
                         modifier = Modifier.weight(1f)
                     )
+                    val locale = currentLocale()
                     WeekStartChoices.forEach { day ->
                         val on = day == settings.weekStart
                         Text(
-                            day.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
+                            day.getDisplayName(TextStyle.SHORT, locale),
                             style = MaterialTheme.typography.labelMedium,
                             color = if (on) theme.onPrimary else theme.ink2,
                             modifier = Modifier
@@ -214,6 +285,18 @@ fun SettingsScreen(
             color = theme.muted
         )
     }
+}
+
+/** The design's pill switch, drawn rather than pulled from Material so it matches the palette. */
+@Composable
+private fun Toggle(on: Boolean) = Box(
+    Modifier
+        .size(46.dp, 27.dp)
+        .background(if (on) theme.success else theme.track, CircleShape)
+        .padding(3.dp),
+    contentAlignment = if (on) Alignment.CenterEnd else Alignment.CenterStart
+) {
+    Box(Modifier.size(21.dp).background(Color.White, CircleShape))
 }
 
 @Composable

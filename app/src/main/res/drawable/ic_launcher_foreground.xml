@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Inside the 72dp safe zone: the same tick the app draws on every habit row. -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M78,38 L47,69 L31,53 L25,59 L47,81 L84,44 Z" />
+</vector>

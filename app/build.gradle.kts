@@ -48,6 +48,13 @@ android {
         compose = true
     }
 
+    lint {
+        // local.properties is machine-local and gitignored. AGP parses `sdk.dir=C:/Android/sdk`
+        // perfectly well; escaping it once produced `C:Androidsdk` and an error message that
+        // named neither the file nor the cause.
+        disable += "PropertyEscape"
+    }
+
     packaging {
         resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
     }

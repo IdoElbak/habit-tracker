@@ -14,6 +14,7 @@ import com.idoelbak.tracker.data.db.HabitEntity
 import com.idoelbak.tracker.data.ThemeMode
 import com.idoelbak.tracker.data.TrackerRepository
 import com.idoelbak.tracker.data.db.TrackerDatabase
+import com.idoelbak.tracker.notify.Reminders
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -72,9 +73,16 @@ class TrackerViewModel(app: Application) : AndroidViewModel(app) {
     fun refresh() = viewModelScope.launch {
         repo.settle(settings.value.weekStart)
         date.value = repo.today()
+        val app = getApplication<Application>()
+        Reminders.ensureChannels(app)
+        if (settings.value.remindersEnabled) Reminders.scheduleNext(app)
     }
 
-    fun toggle(habitId: Long) = viewModelScope.launch { repo.toggle(habitId, date.value) }
+    fun toggle(habitId: Long) = viewModelScope.launch {
+        repo.toggle(habitId, date.value)
+        // The evening countdown has to shrink as things get ticked, and disappear when the day is done.
+        Reminders.refresh(getApplication())
+    }
 
     fun rate(mood: Int?, motivation: Int?) = viewModelScope.launch {
         repo.rate(date.value, mood, motivation)
@@ -93,6 +101,33 @@ class TrackerViewModel(app: Application) : AndroidViewModel(app) {
     fun setThemeMode(mode: ThemeMode) = viewModelScope.launch { prefs.setThemeMode(mode) }
 
     fun setWeekStart(day: java.time.DayOfWeek) = viewModelScope.launch { prefs.setWeekStart(day) }
+
+    fun setReminders(on: Boolean) = viewModelScope.launch {
+        prefs.setReminders(on)
+        val app = getApplication<Application>()
+        if (on) Reminders.scheduleNext(app) else Reminders.cancel(app)
+    }
+
+    /**
+     * Sends the user to the battery-optimisation exemption dialog. On Samsung this is the difference
+     * between reminders that fire and reminders that silently stop after a few quiet days.
+     */
+    fun requestBatteryExemption() {
+        val app = getApplication<Application>()
+        val intent = android.content.Intent(
+            android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+            android.net.Uri.parse("package:" + app.packageName)
+        ).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+        runCatching { app.startActivity(intent) }.onFailure {
+            // Some OEM builds hide the dialog; the app-details page always exists.
+            app.startActivity(
+                android.content.Intent(
+                    android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    android.net.Uri.parse("package:" + app.packageName)
+                ).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+        }
+    }
 
     fun currentDate(): LocalDate = date.value
 }

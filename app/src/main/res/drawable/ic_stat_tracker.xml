@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Status-bar icons must be a flat white silhouette; Android tints them itself. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M20.3,5.4 L9.4,16.3 L3.7,10.6 L2.1,12.2 L9.4,19.5 L21.9,7 Z" />
+</vector>

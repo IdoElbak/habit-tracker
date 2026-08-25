@@ -23,6 +23,8 @@
     <application
         android:allowBackup="true"
         android:fullBackupContent="true"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:label="Tracker"
         android:supportsRtl="true"
         android:theme="@style/Theme.Tracker">
@@ -37,6 +39,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--
+          Exported so the system can deliver BOOT_COMPLETED. Without it every reminder stops
+          silently the first time the phone restarts. The receiver ignores any action it does not
+          recognise.
+        -->
+        <receiver
+            android:name=".notify.ReminderReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
 
     </application>
 

@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -19,7 +20,8 @@ enum class ThemeMode { SYSTEM, LIGHT, DARK }
 data class Settings(
     val paletteId: String = DEFAULT_PALETTE_ID,
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
-    val weekStart: DayOfWeek = DayOfWeek.SUNDAY
+    val weekStart: DayOfWeek = DayOfWeek.SUNDAY,
+    val remindersEnabled: Boolean = true
 ) {
     companion object {
         const val DEFAULT_PALETTE_ID = "indigo_sage"
@@ -39,6 +41,7 @@ class Prefs(private val context: Context) {
     private val paletteKey = stringPreferencesKey("palette")
     private val themeKey = stringPreferencesKey("theme_mode")
     private val weekStartKey = intPreferencesKey("week_start")
+    private val remindersKey = booleanPreferencesKey("reminders")
 
     val flow: Flow<Settings> = context.settingsStore.data
         // A corrupt or unreadable file must not take the app down; defaults are always usable.
@@ -52,7 +55,8 @@ class Prefs(private val context: Context) {
                 weekStart = stored[weekStartKey]
                     ?.takeIf { it in 1..7 }
                     ?.let(DayOfWeek::of)
-                    ?: DayOfWeek.SUNDAY
+                    ?: DayOfWeek.SUNDAY,
+                remindersEnabled = stored[remindersKey] ?: true
             )
         }
 
@@ -61,6 +65,8 @@ class Prefs(private val context: Context) {
     suspend fun setThemeMode(mode: ThemeMode) = edit { it[themeKey] = mode.name }
 
     suspend fun setWeekStart(day: DayOfWeek) = edit { it[weekStartKey] = day.value }
+
+    suspend fun setReminders(on: Boolean) = edit { it[remindersKey] = on }
 
     private suspend fun edit(block: (androidx.datastore.preferences.core.MutablePreferences) -> Unit) {
         context.settingsStore.edit(block)

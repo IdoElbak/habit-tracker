@@ -126,6 +126,8 @@ fun TrackerApp(vm: TrackerViewModel = viewModel()) {
                         onPalette = { vm.setPalette(it) },
                         onThemeMode = { vm.setThemeMode(it) },
                         onWeekStart = { vm.setWeekStart(it) },
+                        onReminders = { vm.setReminders(it) },
+                        onBatterySettings = { vm.requestBatteryExemption() },
                         onBack = { nav.popBackStack() }
                     )
                 }

@@ -50,9 +50,9 @@ Hard requirements from the original request:
 | 2 · Engine + data layer | **DONE** — 90 unit tests, all passing |
 | 3 · Today screen + add/edit habit | **DONE** — plus Week and Habits pages (see "Page structure") |
 | 4 · Analytics screens | **DONE** — Stats screen; per-habit detail view deliberately deferred |
-| 5 · Settings | **DONE** — palette, appearance, week start; language and reminders wait for their phases |
-| 6 · Notifications | **NEXT** |
-| 7 · Widgets (1×1, 2×1) | not started |
+| 5 · Settings | **DONE** — palette, appearance, week start, reminders, Samsung battery card |
+| 6 · Notifications | **DONE** — six slots, live countdown, boot rescheduling, Samsung battery card |
+| 7 · Widgets (1×1, 2×1) | **NEXT** |
 | 8 · Hebrew + bidi | not started |
 | 9 · Export/import | not started |
 | 10 · GitHub repo + CI + APK distribution | **PARTLY** — repo live at https://github.com/IdoElbak/habit-tracker, pushed. CI + signed release APK still to do |
@@ -238,6 +238,13 @@ app/src/main/java/com/idoelbak/tracker/ui/
                          tick box, pill
     theme/Palette.kt     7 palettes as DATA, light + dark token sets
     theme/Theme.kt       fonts, type ramp, TextDirection.Content on every style, LocalTokens
+
+app/src/main/java/com/idoelbak/tracker/notify/
+    Reminders.kt          the six slots, the notifications, and the alarm booking. Alarms are
+                          INEXACT on purpose (setWindow, 10 min): no SCHEDULE_EXACT_ALARM, which
+                          Samsung One UI has a nasty bug around. Each alarm books the next one,
+                          so there is one pending intent, and it survives the app being killed.
+    ReminderReceiver.kt   where alarms land, and where reminders come back after a reboot.
 
 app/src/main/java/com/idoelbak/tracker/data/Prefs.kt
     DataStore-backed Settings: paletteId, themeMode, weekStart. The week start is passed INTO

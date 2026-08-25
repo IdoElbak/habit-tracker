@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Indigo, the default palette's primary. -->
+    <color name="ic_launcher_background">#2E4A7D</color>
+    <color name="notification_urgent">#B0453F</color>
+</resources>

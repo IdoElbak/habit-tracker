@@ -33,7 +33,6 @@ import com.idoelbak.tracker.data.StatsUi
 import com.idoelbak.tracker.data.WeekdayBar
 import com.idoelbak.tracker.ui.theme.theme
 import java.time.format.TextStyle
-import java.util.Locale
 
 /**
  * What all of it added up to. Settled days only -- today is still being lived, and counting it would
@@ -195,6 +194,7 @@ private fun BigNumber(value: String, label: String, note: String, modifier: Modi
 @Composable
 private fun HeatGrid(ui: StatsUi) = Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
     val heat = theme.heat
+    val locale = currentLocale()
     ui.grid.forEach { week ->
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             week.forEach { cell ->
@@ -213,7 +213,7 @@ private fun HeatGrid(ui: StatsUi) = Column(verticalArrangement = Arrangement.spa
     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         ui.grid.firstOrNull()?.forEach { cell ->
             Text(
-                cell.date.dayOfWeek.getDisplayName(TextStyle.NARROW, Locale.getDefault()),
+                cell.date.dayOfWeek.getDisplayName(TextStyle.NARROW, locale),
                 style = MaterialTheme.typography.bodySmall,
                 color = theme.muted,
                 textAlign = TextAlign.Center,
@@ -232,6 +232,7 @@ private fun WeekdayChart(bars: List<WeekdayBar>) = Row(
     verticalAlignment = Alignment.Bottom
 ) {
     val worst = bars.filter { it.percent != null }.minByOrNull { it.percent!! }?.day
+    val locale = currentLocale()
     bars.forEach { bar ->
         Column(
             Modifier.weight(1f).fillMaxHeight(),
@@ -253,7 +254,7 @@ private fun WeekdayChart(bars: List<WeekdayBar>) = Row(
                     )
             )
             Text(
-                bar.day.getDisplayName(TextStyle.NARROW, Locale.getDefault()),
+                bar.day.getDisplayName(TextStyle.NARROW, locale),
                 style = MaterialTheme.typography.bodySmall,
                 color = theme.muted,
                 modifier = Modifier.padding(top = 5.dp)

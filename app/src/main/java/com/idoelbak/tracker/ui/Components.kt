@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.PathParser
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.text.BidiFormatter
@@ -39,6 +40,15 @@ import com.idoelbak.tracker.ui.theme.theme
  * with `TextDirection.Content`, which every style in the typography already carries.
  */
 fun String.isolated(): String = BidiFormatter.getInstance().unicodeWrap(this)
+
+/**
+ * The locale as Compose sees it.
+ *
+ * `Locale.getDefault()` is read once and never observed, so weekday names would keep their old
+ * language after a switch to Hebrew until the whole activity was recreated.
+ */
+@Composable
+fun currentLocale(): java.util.Locale = LocalConfiguration.current.locales[0]
 
 /** The SVG path data from the design canvas, reused verbatim so the app matches the artboards. */
 object Glyphs {
