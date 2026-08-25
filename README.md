@@ -35,6 +35,13 @@ runs out, and a 1×1 home-screen widget showing how the day is going.
 
 Settings is a gear in the Today header rather than a fifth tab.
 
+## Install it on a phone
+
+Latest signed APK: **[releases/latest/download/tracker.apk](https://github.com/IdoElbak/habit-tracker/releases/latest/download/tracker.apk)**
+
+For updates without a laptop, install [Obtainium](https://github.com/ImranR98/Obtainium) once, add
+this repository as an app, and it will watch releases and offer one-tap updates from the phone.
+
 ## Build
 
 ```bash
@@ -54,6 +61,31 @@ data            Room entities/DAOs, the day closer, the repository the UI reads
 ui              Compose screens, palette tokens, typography
 design          the design canvas artboards this UI is built against
 ```
+
+## Releasing
+
+Tagging `v*` builds a signed APK and attaches it to a GitHub Release. That needs one keystore,
+generated once and **never committed** — Android refuses an update signed by a different key, so the
+day this file is lost is the day every install has to be removed and reinstalled by hand.
+
+```bash
+keytool -genkeypair -v -keystore tracker.jks -alias tracker \
+  -keyalg RSA -keysize 4096 -validity 10000
+
+base64 -w 0 tracker.jks > tracker.jks.b64          # macOS/BSD: base64 -i tracker.jks
+
+gh secret set KEYSTORE_BASE64 < tracker.jks.b64
+gh secret set KEYSTORE_PASSWORD
+gh secret set KEY_ALIAS        # tracker
+gh secret set KEY_PASSWORD
+
+git tag v0.1.0 && git push origin v0.1.0
+```
+
+Keep `tracker.jks` and its passwords somewhere you will still have them in five years. Delete
+`tracker.jks.b64` once the secret is set.
+
+## Fonts
 
 Fonts are [Figtree](https://github.com/erikdkennedy/figtree) and
 [Familjen Grotesk](https://github.com/kavelbaser/familjen-grotesk), both under the SIL Open Font

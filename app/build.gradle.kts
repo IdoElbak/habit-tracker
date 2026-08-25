@@ -5,6 +5,9 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
+// CI passes these; a local build gets the defaults and an unsigned release.
+val keystorePath: String? = System.getenv("KEYSTORE_PATH")
+
 android {
     namespace = "com.idoelbak.tracker"
 
@@ -20,11 +23,25 @@ android {
         // Deliberately 36, not 37: Ido's phone runs Android 16, so those are the runtime
         // behaviours we can actually test against.
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0"
+        // The release workflow sets these from the tag and the run number.
+        versionCode = (System.getenv("VERSION_CODE") ?: "1").toInt()
+        versionName = (System.getenv("VERSION_NAME") ?: "v0.1.0").removePrefix("v")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+    }
+
+    signingConfigs {
+        create("release") {
+            // One keystore for ever: Android refuses an update signed by a different key, and that
+            // is exactly what makes in-place updates from the phone possible.
+            if (keystorePath != null) {
+                storeFile = file(keystorePath)
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
+            }
+        }
     }
 
     buildTypes {
@@ -33,6 +50,7 @@ android {
             versionNameSuffix = "-debug"
         }
         release {
+            if (keystorePath != null) signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")

@@ -55,8 +55,8 @@ Hard requirements from the original request:
 | 7 · Widgets (1×1, 2×1) | **DONE** — one responsive widget: 1×1 ring, stretch to 2×1 for the streak |
 | 8 · Hebrew + bidi | **DONE** — full he translation, per-app language picker, bidi corpus on a debug screen |
 | 9 · Export/import | **DONE** — JSON backup, CSV export, restore behind a confirmation |
-| 10 · GitHub repo + CI + APK distribution | **PARTLY** — repo live at https://github.com/IdoElbak/habit-tracker, pushed. CI + signed release APK still to do |
-| 11 · On-device verification | not started |
+| 10 · GitHub repo + CI + APK distribution | **DONE** except the keystore — repo live at https://github.com/IdoElbak/habit-tracker, CI and the release workflow are in. Ido generates the keystore and sets four secrets (README → Releasing) |
+| 11 · On-device verification | **NEXT — only Ido can do this** |
 
 ### Test status
 
@@ -123,7 +123,7 @@ re-extract it if it is gone.)
 | **gh (GitHub CLI)** | **2.98.0, logged in as `IdoElbak`.** Ido installed it himself with `winget install --id GitHub.cli`. |
 | git | 2.53.0 — **repo initialised**, branch `main`, ten commits, no remote yet |
 
-### gh CLI and the repo
+### The repo, CI, and what is left of Phase 10
 
 `gh auth status` now reports **logged in to github.com as IdoElbak** (scopes: gist, read:org, repo,
 workflow). `gh` is still not always on `PATH` in the Bash tool — prefix with:
@@ -139,15 +139,21 @@ user.name  = Ido Elbak
 user.email = ido.elbak@gmail.com
 ```
 
-**Still open: creating the GitHub remote and pushing.** The command below was refused by Claude
-Code's permission classifier (creating a public repo and pushing is an outward-facing action), so
-Ido runs it himself with the `!` prefix, or approves it when asked:
+**The repo is live and pushed: https://github.com/IdoElbak/habit-tracker** (public, branch `main`).
+Creating it needed a permission rule — the auto-mode classifier refuses `gh repo create --public
+--push` from a tool call. Ido added `Bash(gh repo create:*)` and `Bash(git push:*)` to
+`.claude/settings.local.json`, which is project-local and gitignored.
 
-```
-! gh repo create habit-tracker --public --source=. --remote=origin --push
-```
+`.github/workflows/check.yml` runs tests, lint and a debug build on every push.
+`.github/workflows/release.yml` builds a **signed** APK on a `v*` tag and attaches it to a Release
+as `tracker.apk`, which is what the README's permanent download link points at. Do not rename that
+asset.
 
-Then CI and the signed-APK release flow (the rest of Phase 10) can go in.
+**The one thing left in Phase 10 is the keystore**, and it has to be Ido: generate it once, never
+commit it, and set `KEYSTORE_BASE64` / `KEYSTORE_PASSWORD` / `KEY_ALIAS` / `KEY_PASSWORD` as repo
+secrets. The exact commands are in the README under "Releasing". Losing that file later means every
+install has to be uninstalled and reinstalled by hand, because Android refuses an update signed by a
+different key.
 
 ---
 
