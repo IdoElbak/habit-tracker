@@ -4,11 +4,14 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.idoelbak.tracker.core.model.Schedule
+import com.idoelbak.tracker.data.Prefs
+import com.idoelbak.tracker.data.Settings
 import com.idoelbak.tracker.data.StatsPeriod
 import com.idoelbak.tracker.data.StatsUi
 import com.idoelbak.tracker.data.TodayUi
 import com.idoelbak.tracker.data.WeekUi
 import com.idoelbak.tracker.data.db.HabitEntity
+import com.idoelbak.tracker.data.ThemeMode
 import com.idoelbak.tracker.data.TrackerRepository
 import com.idoelbak.tracker.data.db.TrackerDatabase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,16 +32,23 @@ import java.time.LocalDate
 class TrackerViewModel(app: Application) : AndroidViewModel(app) {
 
     private val repo = TrackerRepository(TrackerDatabase.get(app))
+    private val prefs = Prefs(app)
+
+    val settings: StateFlow<Settings> = prefs.flow
+        .stateIn(viewModelScope, SharingStarted.Eagerly, Settings())
 
     /** Which day the app is showing. Re-read on every resume, so a phone left open rolls over. */
     private val date = MutableStateFlow(repo.today())
 
-    val today: StateFlow<TodayUi> = date
-        .flatMapLatest { repo.observeToday(it) }
+    /** The day and the week start together decide what is due; every screen reads both. */
+    private val day = combine(date, prefs.flow) { date, settings -> date to settings.weekStart }
+
+    val today: StateFlow<TodayUi> = day
+        .flatMapLatest { (date, weekStart) -> repo.observeToday(date, weekStart) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TodayUi(date.value))
 
-    val week: StateFlow<WeekUi> = date
-        .flatMapLatest { repo.observeWeek(it) }
+    val week: StateFlow<WeekUi> = day
+        .flatMapLatest { (date, weekStart) -> repo.observeWeek(date, weekStart) }
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
@@ -50,15 +60,17 @@ class TrackerViewModel(app: Application) : AndroidViewModel(app) {
 
     private val period = MutableStateFlow(StatsPeriod.MONTH)
 
-    val stats: StateFlow<StatsUi> = combine(date, period) { day, chosen -> day to chosen }
-        .flatMapLatest { (day, chosen) -> repo.observeStats(day, chosen) }
+    val stats: StateFlow<StatsUi> = combine(day, period) { (date, weekStart), chosen ->
+        Triple(date, weekStart, chosen)
+    }
+        .flatMapLatest { (date, weekStart, chosen) -> repo.observeStats(date, weekStart, chosen) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), StatsUi())
 
     fun pickPeriod(chosen: StatsPeriod) { period.value = chosen }
 
     /** Settle whatever finished while the app was away, then show the day we are actually in. */
     fun refresh() = viewModelScope.launch {
-        repo.settle()
+        repo.settle(settings.value.weekStart)
         date.value = repo.today()
     }
 
@@ -75,6 +87,12 @@ class TrackerViewModel(app: Application) : AndroidViewModel(app) {
     fun archive(id: Long) = viewModelScope.launch { repo.archive(id) }
 
     fun unarchive(id: Long) = viewModelScope.launch { repo.unarchive(id) }
+
+    fun setPalette(id: String) = viewModelScope.launch { prefs.setPalette(id) }
+
+    fun setThemeMode(mode: ThemeMode) = viewModelScope.launch { prefs.setThemeMode(mode) }
+
+    fun setWeekStart(day: java.time.DayOfWeek) = viewModelScope.launch { prefs.setWeekStart(day) }
 
     fun currentDate(): LocalDate = date.value
 }

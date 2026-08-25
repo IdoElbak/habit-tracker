@@ -50,12 +50,12 @@ Hard requirements from the original request:
 | 2 · Engine + data layer | **DONE** — 90 unit tests, all passing |
 | 3 · Today screen + add/edit habit | **DONE** — plus Week and Habits pages (see "Page structure") |
 | 4 · Analytics screens | **DONE** — Stats screen; per-habit detail view deliberately deferred |
-| 5 · Settings | **NEXT** |
-| 6 · Notifications | not started |
+| 5 · Settings | **DONE** — palette, appearance, week start; language and reminders wait for their phases |
+| 6 · Notifications | **NEXT** |
 | 7 · Widgets (1×1, 2×1) | not started |
 | 8 · Hebrew + bidi | not started |
 | 9 · Export/import | not started |
-| 10 · GitHub repo + CI + APK distribution | **PARTLY** — repo initialised, ten commits made locally; creating the GitHub remote and pushing is still open (see below) |
+| 10 · GitHub repo + CI + APK distribution | **PARTLY** — repo live at https://github.com/IdoElbak/habit-tracker, pushed. CI + signed release APK still to do |
 | 11 · On-device verification | not started |
 
 ### Test status
@@ -231,12 +231,18 @@ app/src/main/java/com/idoelbak/tracker/ui/
     WeekScreen.kt        every habit against its own full week: bar, 7 dots, "3 of 7"
     StatsScreen.kt       period selector, three headline numbers, strength bars, 4-week heat
                          grid, weekday bars + the weakest-day sentence, 8-week trend, mood
+    SettingsScreen.kt    7 palettes, System/Light/Dark, week start, the streak deal in words
     HabitsScreen.kt      the dry definitions only -- name, schedule, edit, archived
     EditHabitScreen.kt   name, optional emoji, the three frequency modes, archive
     Components.kt        isolated() bidi helper, Glyph (SVG path renderer), ring, week dots,
                          tick box, pill
     theme/Palette.kt     7 palettes as DATA, light + dark token sets
     theme/Theme.kt       fonts, type ramp, TextDirection.Content on every style, LocalTokens
+
+app/src/main/java/com/idoelbak/tracker/data/Prefs.kt
+    DataStore-backed Settings: paletteId, themeMode, weekStart. The week start is passed INTO
+    the repository rather than held on it -- a mutable field there is shared state that goes
+    wrong quietly.
 
 app/src/main/java/com/idoelbak/tracker/data/Stats.kt
     StatsPeriod, StatsUi and buildStats() -- another pure top-level function, so every

@@ -94,13 +94,15 @@ class TrackerRepository(
     private val now: () -> LocalDateTime = LocalDateTime::now
 ) {
 
-    // ponytail: fixed until Settings ships the week-start picker. Israel starts on Sunday.
-    val weekStart: DayOfWeek = DayOfWeek.SUNDAY
-
     fun today(): LocalDate = DayBoundary.trackingDate(now())
 
-    /** Settles every day that finished while the app was closed. Cheap when there is nothing to do. */
-    suspend fun settle(): Int = DayCloser(
+    /**
+     * Settles every day that finished while the app was closed. Cheap when there is nothing to do.
+     *
+     * [weekStart] is passed in rather than held here: it is a setting the user can change, and a
+     * mutable field on a repository is the kind of shared state that goes wrong quietly.
+     */
+    suspend fun settle(weekStart: DayOfWeek): Int = DayCloser(
         habitsOn = { date -> db.habits().activeOn(endOfDayMillis(date)) },
         completionsBetween = { from, to -> db.completions().between(from, to).map { it.habitId to it.date } },
         recordExists = { date -> db.dayRecords().on(date) != null },
@@ -110,7 +112,7 @@ class TrackerRepository(
         weekStart = weekStart
     ).settleThrough(today())
 
-    fun observeToday(date: LocalDate): Flow<TodayUi> {
+    fun observeToday(date: LocalDate, weekStart: DayOfWeek): Flow<TodayUi> {
         val from = DayBoundary.weekStartOf(date, weekStart)
         return combine(
             db.habits().observeActive(),
@@ -123,7 +125,7 @@ class TrackerRepository(
     }
 
     /** The week every active habit is having, whatever is due today. */
-    fun observeWeek(date: LocalDate): Flow<WeekUi> {
+    fun observeWeek(date: LocalDate, weekStart: DayOfWeek): Flow<WeekUi> {
         val from = DayBoundary.weekStartOf(date, weekStart)
         return combine(
             db.habits().observeActive(),
@@ -140,7 +142,7 @@ class TrackerRepository(
      * Everything the stats screen needs. The query window is always the wider of the period and the
      * strength window, so the strength bars do not shrink when the period selector is set to Week.
      */
-    fun observeStats(date: LocalDate, period: StatsPeriod): Flow<StatsUi> {
+    fun observeStats(date: LocalDate, weekStart: DayOfWeek, period: StatsPeriod): Flow<StatsUi> {
         val from = minOf(period.from(date, weekStart), date.minusDays(120))
         return combine(
             db.dayRecords().observeBetween(from, date),

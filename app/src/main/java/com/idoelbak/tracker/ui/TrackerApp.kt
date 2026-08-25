@@ -3,7 +3,6 @@ package com.idoelbak.tracker.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -27,6 +25,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.compose.runtime.collectAsState
+import androidx.compose.foundation.isSystemInDarkTheme
+import com.idoelbak.tracker.data.ThemeMode
+import com.idoelbak.tracker.ui.theme.Palettes
 import com.idoelbak.tracker.ui.theme.TrackerTheme
 import com.idoelbak.tracker.ui.theme.theme
 
@@ -62,8 +63,16 @@ fun TrackerApp(vm: TrackerViewModel = viewModel()) {
     val week by vm.week.collectAsState()
     val habits by vm.habits.collectAsState()
     val stats by vm.stats.collectAsState()
+    val settings by vm.settings.collectAsState()
 
-    TrackerTheme {
+    TrackerTheme(
+        palette = Palettes.byId(settings.paletteId),
+        dark = when (settings.themeMode) {
+            ThemeMode.LIGHT -> false
+            ThemeMode.DARK -> true
+            ThemeMode.SYSTEM -> isSystemInDarkTheme()
+        }
+    ) {
         Scaffold(
             containerColor = theme.background,
             bottomBar = { if (onATab) BottomBar(route) { nav.switchTo(it) } },
@@ -112,7 +121,13 @@ fun TrackerApp(vm: TrackerViewModel = viewModel()) {
                 }
 
                 composable(ROUTE_SETTINGS) {
-                    Placeholder("Settings", "Palettes, language and reminders land in a later phase.")
+                    SettingsScreen(
+                        settings = settings,
+                        onPalette = { vm.setPalette(it) },
+                        onThemeMode = { vm.setThemeMode(it) },
+                        onWeekStart = { vm.setWeekStart(it) },
+                        onBack = { nav.popBackStack() }
+                    )
                 }
 
                 composable(
@@ -172,21 +187,5 @@ private fun BottomBar(route: String?, onPick: (String) -> Unit) = Row(
                 color = if (active) theme.primary else theme.muted
             )
         }
-    }
-}
-
-@Composable
-private fun Placeholder(title: String, note: String) = Box(
-    Modifier.fillMaxSize().padding(32.dp),
-    contentAlignment = Alignment.Center
-) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(title, style = MaterialTheme.typography.headlineMedium, color = theme.ink)
-        Text(
-            note,
-            style = MaterialTheme.typography.bodyMedium,
-            color = theme.muted,
-            textAlign = TextAlign.Center
-        )
     }
 }
