@@ -14,7 +14,9 @@ import com.idoelbak.tracker.data.db.HabitEntity
 import com.idoelbak.tracker.data.ThemeMode
 import com.idoelbak.tracker.data.TrackerRepository
 import com.idoelbak.tracker.data.db.TrackerDatabase
+import androidx.glance.appwidget.updateAll
 import com.idoelbak.tracker.notify.Reminders
+import com.idoelbak.tracker.widget.TrackerWidget
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -80,8 +82,10 @@ class TrackerViewModel(app: Application) : AndroidViewModel(app) {
 
     fun toggle(habitId: Long) = viewModelScope.launch {
         repo.toggle(habitId, date.value)
-        // The evening countdown has to shrink as things get ticked, and disappear when the day is done.
+        // The evening countdown has to shrink as things get ticked, and disappear when the day is
+        // done; the widget has to agree with the app the instant you look at the home screen.
         Reminders.refresh(getApplication())
+        TrackerWidget().updateAll(getApplication())
     }
 
     fun rate(mood: Int?, motivation: Int?) = viewModelScope.launch {

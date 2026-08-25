@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  A true 1x1 widget: targetCellWidth/Height of 1 is what makes the launcher place it in a single
+  cell on Android 12+, and minResizeWidth has to stay small or the cell is refused.
+  updatePeriodMillis is the whole "periodic refresh" story: no worker, no code.
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/widget_description"
+    android:initialLayout="@layout/glance_default_loading_layout"
+    android:minHeight="40dp"
+    android:minResizeHeight="40dp"
+    android:minResizeWidth="40dp"
+    android:minWidth="40dp"
+    android:resizeMode="horizontal|vertical"
+    android:targetCellHeight="1"
+    android:targetCellWidth="1"
+    android:updatePeriodMillis="1800000"
+    android:widgetCategory="home_screen" />
