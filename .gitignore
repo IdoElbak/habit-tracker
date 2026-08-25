@@ -25,3 +25,6 @@ Thumbs.db
 
 # Local tooling pulled in for this project
 .tools/
+
+# Personal Claude Code permissions -- local to this machine
+.claude/settings.local.json
