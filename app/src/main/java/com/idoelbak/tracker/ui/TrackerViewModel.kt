@@ -4,8 +4,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.idoelbak.tracker.core.model.Schedule
-import com.idoelbak.tracker.data.DefinedHabit
 import com.idoelbak.tracker.data.TodayUi
+import com.idoelbak.tracker.data.WeekUi
+import com.idoelbak.tracker.data.db.HabitEntity
 import com.idoelbak.tracker.data.TrackerRepository
 import com.idoelbak.tracker.data.db.TrackerDatabase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -33,8 +34,15 @@ class TrackerViewModel(app: Application) : AndroidViewModel(app) {
         .flatMapLatest { repo.observeToday(it) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TodayUi(date.value))
 
-    val habits: StateFlow<List<DefinedHabit>> = date
-        .flatMapLatest { repo.observeDefined(it) }
+    val week: StateFlow<WeekUi> = date
+        .flatMapLatest { repo.observeWeek(it) }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            WeekUi(date.value, date.value.plusDays(6))
+        )
+
+    val habits: StateFlow<List<HabitEntity>> = repo.observeAllHabits()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     /** Settle whatever finished while the app was away, then show the day we are actually in. */

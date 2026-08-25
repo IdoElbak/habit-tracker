@@ -100,6 +100,29 @@ class TodayUiTest {
     }
 
     @Test
+    fun `the week page measures every habit against its own full week`() {
+        val ticks = listOf(
+            tick(read.id, sunday), tick(read.id, monday), tick(read.id, tuesday),
+            tick(draw.id, monday),
+            tick(gym.id, monday)
+        )
+        val week = buildWeek(
+            date = tuesday,
+            weekFrom = DayBoundary.weekStartOf(tuesday, weekStart),
+            habits = listOf(gym, read, draw),
+            ticks = ticks,
+            weekStart = weekStart
+        )
+
+        // A daily habit's week is 7, a quota habit's is its quota, a weekday habit's is its days.
+        assertEquals(listOf(2, 7, 3), week.rows.map { it.goal })
+        assertEquals(listOf(1, 3, 1), week.rows.map { it.done })
+        assertEquals(5, week.done)
+        assertEquals(12, week.goal)
+        assertEquals("half a two-day week", 0.5f, week.rows.first().fraction, 0.001f)
+    }
+
+    @Test
     fun `a met quota drops off today but a missed day never shows as a miss`() {
         val ticks = listOf(tick(draw.id, sunday), tick(draw.id, monday), tick(draw.id, tuesday))
         val wednesday = sunday.plusDays(3)

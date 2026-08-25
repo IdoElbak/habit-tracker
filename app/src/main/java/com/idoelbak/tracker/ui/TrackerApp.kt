@@ -31,23 +31,24 @@ import com.idoelbak.tracker.ui.theme.TrackerTheme
 import com.idoelbak.tracker.ui.theme.theme
 
 private const val ROUTE_TODAY = "today"
+private const val ROUTE_WEEK = "week"
 private const val ROUTE_HABITS = "habits"
 private const val ROUTE_STATS = "stats"
 private const val ROUTE_SETTINGS = "settings"
 private const val ROUTE_EDIT = "edit"
 
-private const val GEAR =
-    "M12 8.8a3.2 3.2 0 1 1 0 6.4a3.2 3.2 0 1 1 0-6.4M12 2.8v3M12 18.2v3M21.2 12h-3M5.8 12h-3" +
-        "M18.5 5.5l-2.1 2.1M7.6 16.4l-2.1 2.1M18.5 18.5l-2.1-2.1M7.6 7.6 5.5 5.5"
-private const val PLUS = "M12 5v14M5 12h14"
-
 private data class Tab(val route: String, val label: String, val glyph: String)
 
+/**
+ * Four tabs, in the order the day is actually lived: what to do now, how the week is going, what a
+ * habit is, and what all of it adds up to. Settings is a gear in the Today header instead of a fifth
+ * tab -- it is visited once a month, not once an hour.
+ */
 private val Tabs = listOf(
     Tab(ROUTE_TODAY, "Today", Glyphs.TODAY),
+    Tab(ROUTE_WEEK, "Week", Glyphs.WEEK),
     Tab(ROUTE_HABITS, "Habits", Glyphs.LIST),
-    Tab(ROUTE_STATS, "Stats", Glyphs.BARS),
-    Tab(ROUTE_SETTINGS, "Settings", GEAR)
+    Tab(ROUTE_STATS, "Stats", Glyphs.BARS)
 )
 
 @Composable
@@ -58,6 +59,7 @@ fun TrackerApp(vm: TrackerViewModel = viewModel()) {
     val onATab = Tabs.any { it.route == route }
 
     val today by vm.today.collectAsState()
+    val week by vm.week.collectAsState()
     val habits by vm.habits.collectAsState()
 
     TrackerTheme {
@@ -71,7 +73,7 @@ fun TrackerApp(vm: TrackerViewModel = viewModel()) {
                         containerColor = theme.primary,
                         contentColor = theme.onPrimary
                     ) {
-                        Glyph(PLUS, 22.dp, theme.onPrimary, strokeWidth = 2f)
+                        Glyph(Glyphs.PLUS, 22.dp, theme.onPrimary, strokeWidth = 2f)
                     }
                 }
             }
@@ -88,9 +90,12 @@ fun TrackerApp(vm: TrackerViewModel = viewModel()) {
                         ui = today,
                         onToggle = { vm.toggle(it) },
                         onRate = { mood, motivation -> vm.rate(mood, motivation) },
-                        onAdd = { nav.navigate(ROUTE_EDIT) }
+                        onAdd = { nav.navigate(ROUTE_EDIT) },
+                        onSettings = { nav.navigate(ROUTE_SETTINGS) }
                     )
                 }
+
+                composable(ROUTE_WEEK) { WeekScreen(week) }
 
                 composable(ROUTE_HABITS) {
                     HabitsScreen(
@@ -115,7 +120,7 @@ fun TrackerApp(vm: TrackerViewModel = viewModel()) {
                 ) { entry ->
                     val id = entry.arguments?.getLong("id")?.takeIf { it > 0 }
                     EditHabitScreen(
-                        existing = habits.firstOrNull { it.habit.id == id }?.habit,
+                        existing = habits.firstOrNull { it.id == id },
                         onSave = { name, emoji, schedule ->
                             vm.save(id, name, emoji, schedule)
                             nav.popBackStack()

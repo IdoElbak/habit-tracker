@@ -47,8 +47,8 @@ Hard requirements from the original request:
 |---|---|
 | 0 · Toolchain | **DONE** — Android SDK, Gradle, JDK, Node all working |
 | 1 · Design canvas | **DONE** — published, awaiting Ido's visual edits (not blocking) |
-| 2 · Engine + data layer | **DONE** — 81 unit tests, all passing |
-| 3 · Today screen + add/edit habit | **DONE** — plus a Habits page listing everything defined |
+| 2 · Engine + data layer | **DONE** — 84 unit tests, all passing |
+| 3 · Today screen + add/edit habit | **DONE** — plus Week and Habits pages (see "Page structure") |
 | 4 · Analytics screens | **NEXT** |
 | 5 · Settings | not started |
 | 6 · Notifications | not started |
@@ -63,10 +63,10 @@ Hard requirements from the original request:
 ```
 DayBoundaryTest      9      DueCalculatorTest   11
 HabitStrengthTest    9      MoodInsightsTest     9
-StatsWindowTest      9      StreakEngineTest    18
-DayCloserTest       11      TodayUiTest          5
+StatsWindowTest      9      StreakEngineTest    20
+DayCloserTest       11      TodayUiTest          6
                     ───────────────────────────────
-                    81 tests, 0 failures, 0 errors
+                    84 tests, 0 failures, 0 errors
 ```
 
 Run them with:
@@ -221,12 +221,14 @@ app/src/main/java/com/idoelbak/tracker/MainActivity.kt
     which settles finished days and re-reads which day it now is.
 
 app/src/main/java/com/idoelbak/tracker/ui/
-    TrackerApp.kt        NavHost + the custom bottom bar. Tabs: Today, Habits, Stats, Settings.
-                         Stats and Settings are placeholders until phases 4 and 5.
+    TrackerApp.kt        NavHost + the custom bottom bar. Tabs: Today, Week, Habits, Stats.
+                         Settings is a gear in the Today header. Stats and Settings are
+                         placeholders until phases 4 and 5.
     TrackerViewModel.kt  ONE view model for the whole app -- today/habits StateFlows, toggle,
                          rate, save, archive. Three screens over one database.
-    TodayScreen.kt       header, ring summary, Due today, This week, mood + motivation sliders
-    HabitsScreen.kt      everything defined, with a status chip: Due today / Open / Resting / Done
+    TodayScreen.kt       header, ring summary, Due today, Optional, mood + motivation sliders
+    WeekScreen.kt        every habit against its own full week: bar, 7 dots, "3 of 7"
+    HabitsScreen.kt      the dry definitions only -- name, schedule, edit, archived
     EditHabitScreen.kt   name, optional emoji, the three frequency modes, archive
     Components.kt        isolated() bidi helper, Glyph (SVG path renderer), ring, week dots,
                          tick box, pill
@@ -245,7 +247,7 @@ app/src/test/java/com/idoelbak/tracker/core/engine/
     DayBoundaryTest.kt  DueCalculatorTest.kt  StreakEngineTest.kt
     HabitStrengthTest.kt  StatsWindowTest.kt  MoodInsightsTest.kt
 app/src/test/java/com/idoelbak/tracker/data/DayCloserTest.kt
-app/src/test/java/com/idoelbak/tracker/data/TodayUiTest.kt    what lands on Today, and what does not
+app/src/test/java/com/idoelbak/tracker/data/TodayUiTest.kt    what lands on Today and on Week
 ```
 
 ### Design working files — `C:\claude_apps\tracker\design`
@@ -339,11 +341,27 @@ screen padding 20dp · min hit target 48dp
 - **Today shows ONLY what is due today.** Ido's rule from the second session: *"tasks that are not
   due to today do not appear in the page of today's tasks but rather only at the page of all the
   tasks i defined. and then on the day they are due they will appear back."* A `NOT_DUE` habit is
-  absent from Today entirely — not greyed, not collapsed at the bottom. It lives on the **Habits**
-  page (a new fourth tab, added for exactly this) and returns to Today on its day. Two deliberate
-  exceptions: a weekly-quota habit with slack still shows under "This week — optional today", and a
+  absent from Today entirely — not greyed, not collapsed at the bottom. Two deliberate exceptions,
+  both confirmed by Ido: a weekly-quota habit with slack shows under an **"Optional"** heading
+  (*"in the today habits add the optional - even under optional so they won't count towards the
+  perfect/qualifying day"*) — ticking it there banks a session and takes it off a later day — and a
   habit ticked out of turn stays visible for the rest of that day rather than vanishing under the
-  hand that ticked it. All of it is pinned by `TodayUiTest`.
+  hand that ticked it. Pinned by `TodayUiTest`.
+
+**Page structure — four tabs, settled in the second session**
+
+Ido asked for three habit pages plus analytics, and invited a better idea. What shipped:
+
+| Tab | What it holds | Why |
+|---|---|---|
+| **Today** | due habits, then optional ones under their own heading, then mood/motivation | the day, and only the day |
+| **Week** | every active habit against **its own** full week — 7 for daily, the quota for weekly, the chosen days for weekday habits — with a bar, the 7-day dots and a weekly total | this is the spreadsheet view the app replaces; measuring each habit against its own goal is what stops rest days looking like failures |
+| **Habits** | the dry definitions: name + how often, tap to edit, archived below | Ido: *"only the dry habits definitions and their configurations"* |
+| **Stats** | Phase 4 | |
+
+**Settings is a gear in the Today header, not a fifth tab** — that was my suggestion in place of five
+tabs, since it is visited once a month, not once an hour. Four tabs also keeps the labels readable
+in Hebrew. If Ido would rather have five, it is one entry in the `Tabs` list in `TrackerApp.kt`.
 - **NO SEEDED HABITS.** Ido was explicit: *"those in my csv habit_tracker aren't necessarily the
   ones I will keep — don't make the app come with them by default."* The app starts empty. The
   spreadsheet names may appear only as **ignorable tappable suggestions** on the Add screen.
@@ -359,12 +377,15 @@ screen padding 20dp · min hit target 48dp
   one" is 9% slack on an 11-habit day but 50% on a 2-habit day.
 - **Perfect vs Complete are tracked separately.** With a permanent allowance you could run 100 days
   without ever finishing everything, so `perfectDays` is counted independently.
-- **Freezes: max 2, start with 2, auto-spent, earn 1 back per 7 PERFECT days.** Ido confirmed the
-  earn-back rule in the second session: *"just to make sure 7 perfect days restore 1 freeze"* — so a
-  day saved by the one-miss allowance now keeps the streak but **does not** count toward a freeze.
-  It does not wipe the count either; only a frozen or broken day resets it. The counter is
-  `StreakState.perfectRun` (renamed from `cleanDays`, which no longer described what it counts).
-  Test: `days saved by the allowance do not buy a freeze back`. Ido asked for
+- **Freezes: max 2, start with 2, auto-spent, earn 1 back per 7 days that counted.** Settled in the
+  second session, after one wrong turn — I briefly made the earn-back require *perfect* days and Ido
+  corrected it: *"a qualifying day should also increment the days. and a frozen day doesn't reset the
+  counter it leaves it as is. only a broken day with no available freezes will reset the days."* So:
+  **PERFECT and COMPLETE both increment `cleanDays`; FROZEN leaves it untouched; only BROKEN resets
+  it.** A bad day costs the freeze, not the fortnight of work behind the next one. Three tests pin
+  it: `a day saved by the allowance still counts toward the next freeze`,
+  `spending a freeze keeps the progress toward the next one`,
+  `breaking the streak is the only thing that wipes the progress`. Ido asked for
   "two, or three, max" — 2 was recommended and accepted, because 3 plus the allowance makes breaking
   a streak nearly impossible.
 - **A FROZEN day HOLDS the streak at its current number and does NOT increment it.** This was

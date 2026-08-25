@@ -17,9 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.idoelbak.tracker.core.model.DueState
 import com.idoelbak.tracker.core.model.ScheduleType
-import com.idoelbak.tracker.data.DefinedHabit
 import com.idoelbak.tracker.data.db.HabitEntity
 import com.idoelbak.tracker.ui.theme.theme
 import java.time.DayOfWeek
@@ -27,21 +25,21 @@ import java.time.format.TextStyle
 import java.util.Locale
 
 /**
- * Every habit ever defined, whatever today happens to be.
+ * The definitions, and nothing else.
  *
- * This is where a habit that is resting today can still be found, edited, or ticked off out of turn.
- * Today's screen stays short precisely because this page exists.
+ * No ticking, no progress, no "due today" -- those belong to Today and to Week. This page is what a
+ * habit *is*: its name and how often it is expected. Tap one to change it.
  */
 @Composable
 fun HabitsScreen(
-    habits: List<DefinedHabit>,
+    habits: List<HabitEntity>,
     onOpen: (Long) -> Unit,
     onAdd: () -> Unit,
     onUnarchive: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val active = habits.filter { it.habit.isActive }
-    val archived = habits.filter { !it.habit.isActive }
+    val active = habits.filter { it.isActive }
+    val archived = habits.filter { !it.isActive }
 
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
@@ -52,7 +50,7 @@ fun HabitsScreen(
             Column {
                 Text("Habits", style = MaterialTheme.typography.headlineMedium, color = theme.ink)
                 Text(
-                    "Everything you defined — ${active.size} active",
+                    "What you have defined — ${active.size} active",
                     style = MaterialTheme.typography.bodyMedium,
                     color = theme.muted
                 )
@@ -79,13 +77,35 @@ fun HabitsScreen(
             }
         }
 
-        items(active, key = { it.habit.id }) { item ->
-            HabitCard(item) { onOpen(item.habit.id) }
+        items(active, key = { it.id }) { habit ->
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .background(theme.surface, RoundedCornerShape(12.dp))
+                    .clickable { onOpen(habit.id) }
+                    .padding(13.dp, 11.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(
+                        label(habit).isolated(),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = theme.ink
+                    )
+                    Text(
+                        scheduleLabel(habit),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = theme.muted
+                    )
+                }
+                Text("Edit", style = MaterialTheme.typography.labelMedium, color = theme.primary)
+            }
         }
 
         if (archived.isNotEmpty()) {
             item { SectionLabel("Archived", Modifier.padding(top = 10.dp)) }
-            items(archived, key = { it.habit.id }) { item ->
+            items(archived, key = { it.id }) { habit ->
                 Row(
                     Modifier
                         .fillMaxWidth()
@@ -94,17 +114,23 @@ fun HabitsScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        label(item.habit).isolated(),
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = theme.muted,
-                        modifier = Modifier.weight(1f)
-                    )
+                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Text(
+                            label(habit).isolated(),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = theme.muted
+                        )
+                        Text(
+                            "Its history is kept",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = theme.muted
+                        )
+                    }
                     Text(
                         "Restore",
                         style = MaterialTheme.typography.labelMedium,
                         color = theme.primary,
-                        modifier = Modifier.clickable { onUnarchive(item.habit.id) }
+                        modifier = Modifier.clickable { onUnarchive(habit.id) }
                     )
                 }
             }
@@ -112,53 +138,13 @@ fun HabitsScreen(
     }
 }
 
-@Composable
-private fun HabitCard(item: DefinedHabit, onOpen: () -> Unit) = Row(
-    Modifier
-        .fillMaxWidth()
-        .background(theme.surface, RoundedCornerShape(12.dp))
-        .clickable(onClick = onOpen)
-        .padding(13.dp, 11.dp),
-    horizontalArrangement = Arrangement.spacedBy(12.dp),
-    verticalAlignment = Alignment.CenterVertically
-) {
-    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        Text(
-            label(item.habit).isolated(),
-            style = MaterialTheme.typography.bodyLarge,
-            color = theme.ink
-        )
-        Text(
-            scheduleLabel(item),
-            style = MaterialTheme.typography.bodySmall,
-            color = theme.muted
-        )
-    }
-    StatusChip(item)
-}
+private fun label(habit: HabitEntity) = listOfNotNull(habit.emoji, habit.name).joinToString(" ")
 
-@Composable
-private fun StatusChip(item: DefinedHabit) {
-    val (text, colour) = when {
-        item.doneToday -> "Done" to theme.success
-        item.state == DueState.DUE -> "Due today" to theme.primary
-        item.state == DueState.OPEN -> "Open" to theme.ink2
-        else -> "Resting" to theme.muted
-    }
-    Pill(colour.copy(alpha = 0.14f)) {
-        Text(text, style = MaterialTheme.typography.labelMedium, color = colour)
-    }
-}
-
-private fun label(habit: HabitEntity) =
-    listOfNotNull(habit.emoji, habit.name).joinToString(" ")
-
-/** "Every day", "3× per week · 1 done", "Sun Tue Thu". */
-private fun scheduleLabel(item: DefinedHabit): String = when (item.habit.scheduleType) {
+/** "Every day", "3× per week", "Sun Tue Thu". */
+private fun scheduleLabel(habit: HabitEntity): String = when (habit.scheduleType) {
     ScheduleType.DAILY -> "Every day"
-    ScheduleType.TIMES_PER_WEEK ->
-        "${item.habit.timesPerWeek}× per week · ${item.doneThisWeek} done"
-    ScheduleType.SPECIFIC_DAYS -> weekdaysFrom(item.habit.weekdayMask)
+    ScheduleType.TIMES_PER_WEEK -> "${habit.timesPerWeek}× per week — any days"
+    ScheduleType.SPECIFIC_DAYS -> weekdaysFrom(habit.weekdayMask)
 }
 
 private fun weekdaysFrom(mask: Int): String = DayOfWeek.entries

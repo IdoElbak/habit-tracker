@@ -43,6 +43,7 @@ fun TodayScreen(
     onToggle: (Long) -> Unit,
     onRate: (Int?, Int?) -> Unit,
     onAdd: () -> Unit,
+    onSettings: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val dateFormat = remember { DateTimeFormatter.ofPattern("EEEE, d MMMM") }
@@ -66,13 +67,22 @@ fun TodayScreen(
                         color = theme.muted
                     )
                 }
-                Pill(theme.primary) {
-                    Glyph(Glyphs.FLAME, 15.dp, theme.onPrimary)
-                    Text(
-                        "${ui.streak}",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = theme.onPrimary
-                    )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Pill(theme.primary) {
+                        Glyph(Glyphs.FLAME, 15.dp, theme.onPrimary)
+                        Text(
+                            "${ui.streak}",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = theme.onPrimary
+                        )
+                    }
+                    // Settings is a rare visit, so it gets a corner rather than a fifth tab.
+                    Box(Modifier.clickable(onClick = onSettings).padding(4.dp)) {
+                        Glyph(Glyphs.GEAR, 21.dp, theme.muted, strokeWidth = 2f)
+                    }
                 }
             }
         }
@@ -92,14 +102,10 @@ fun TodayScreen(
 
         if (ui.weekly.isNotEmpty()) {
             item {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    SectionLabel("This week")
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    SectionLabel("Optional")
                     Text(
-                        "optional today",
+                        "Doesn't count toward the day — ticking one takes it off a later day",
                         style = MaterialTheme.typography.bodySmall,
                         color = theme.muted
                     )

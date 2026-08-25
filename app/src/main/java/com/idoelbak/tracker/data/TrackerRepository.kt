@@ -61,13 +61,27 @@ data class TodayUi(
     val left: Int get() = dueCount - doneCount
 }
 
-/** A habit as it appears on the "all habits" page: every one defined, due today or not. */
-data class DefinedHabit(
-    val habit: HabitEntity,
-    val state: DueState,
-    val doneToday: Boolean,
-    val doneThisWeek: Int
-)
+/** One habit's week: how many of its sessions are banked, and which days they landed on. */
+data class WeekRow(
+    val id: Long,
+    val name: String,
+    val emoji: String?,
+    val done: Int,
+    /** What a full week looks like: 7 for a daily habit, the quota, or the number of chosen days. */
+    val goal: Int,
+    val week: List<DayDot>
+) {
+    val fraction: Float get() = if (goal == 0) 0f else (done.toFloat() / goal).coerceAtMost(1f)
+}
+
+data class WeekUi(
+    val from: LocalDate,
+    val to: LocalDate,
+    val rows: List<WeekRow> = emptyList()
+) {
+    val done: Int get() = rows.sumOf { it.done }
+    val goal: Int get() = rows.sumOf { it.goal }
+}
 
 /**
  * The one place the DAOs meet the engine.
@@ -108,26 +122,19 @@ class TrackerRepository(
         }
     }
 
-    /** Everything defined, whatever today happens to be -- including habits resting today. */
-    fun observeDefined(date: LocalDate): Flow<List<DefinedHabit>> {
+    /** The week every active habit is having, whatever is due today. */
+    fun observeWeek(date: LocalDate): Flow<WeekUi> {
         val from = DayBoundary.weekStartOf(date, weekStart)
         return combine(
-            db.habits().observeAll(),
+            db.habits().observeActive(),
             db.completions().observeBetween(from, from.plusDays(6))
         ) { habits, ticks ->
-            habits.map { habit ->
-                val mine = ticks.filter { it.habitId == habit.id }
-                DefinedHabit(
-                    habit = habit,
-                    state = DueCalculator.dueState(
-                        habit.schedule, date, weekStart, mine.count { it.date < date }
-                    ),
-                    doneToday = mine.any { it.date == date },
-                    doneThisWeek = mine.size
-                )
-            }
+            buildWeek(date, from, habits, ticks, weekStart)
         }
     }
+
+    /** Every habit ever defined, archived ones included. The configuration page reads this. */
+    fun observeAllHabits(): Flow<List<HabitEntity>> = db.habits().observeAll()
 
     suspend fun toggle(habitId: Long, date: LocalDate) {
         if (db.completions().isDone(habitId, date)) {
@@ -241,6 +248,35 @@ internal fun buildToday(
         motivation = rating?.motivation
     )
 }
+
+/**
+ * The week page: every active habit with the sessions it has banked out of a full week.
+ *
+ * A daily habit's week is 7, a quota habit's is its quota, and a weekday habit's is however many
+ * days it picked -- so "3 of 3" and "5 of 7" are both a finished week, and the page compares like
+ * with like rather than making rest days look like failures.
+ */
+internal fun buildWeek(
+    date: LocalDate,
+    weekFrom: LocalDate,
+    habits: List<HabitEntity>,
+    ticks: List<CompletionEntity>,
+    weekStart: DayOfWeek
+) = WeekUi(
+    from = weekFrom,
+    to = weekFrom.plusDays(6),
+    rows = habits.map { habit ->
+        val mine = ticks.filter { it.habitId == habit.id }
+        WeekRow(
+            id = habit.id,
+            name = habit.name,
+            emoji = habit.emoji,
+            done = mine.size,
+            goal = habit.schedule.weeklyGoal,
+            week = weekStrip(habit, date, weekFrom, mine, weekStart)
+        )
+    }
+)
 
 private fun weekStrip(
     habit: HabitEntity,

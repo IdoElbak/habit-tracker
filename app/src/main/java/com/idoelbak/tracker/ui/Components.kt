@@ -6,6 +6,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -48,6 +50,12 @@ object Glyphs {
         "M4 6.5 5.6 8.1 8.5 5M4 12.5 5.6 14.1 8.5 11M4 18.5 5.6 20.1 8.5 17M12 6.5h8M12 12.5h8M12 18.5h8"
     const val BARS = "M4 20V13M10 20V4M16 20V9M22 20V15"
     const val LIST = "M4 6.5h16M4 12.5h16M4 18.5h16"
+    const val WEEK =
+        "M4 7.5h16M4 7.5v11h16v-11M4 7.5l0-2.5h16v2.5M8.5 3.5v3M15.5 3.5v3M8 12h2M14 12h2M8 15.5h2M14 15.5h2"
+    const val GEAR =
+        "M12 8.8a3.2 3.2 0 1 1 0 6.4a3.2 3.2 0 1 1 0-6.4M12 2.8v3M12 18.2v3M21.2 12h-3M5.8 12h-3" +
+            "M18.5 5.5l-2.1 2.1M7.6 16.4l-2.1 2.1M18.5 18.5l-2.1-2.1M7.6 7.6 5.5 5.5"
+    const val PLUS = "M12 5v14M5 12h14"
 }
 
 /**
@@ -155,6 +163,24 @@ fun TickBox(done: Boolean, modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center
     ) {
         if (done) Glyph(Glyphs.CHECK, 12.dp, Color.White, strokeWidth = 2.4f, viewport = 16f)
+    }
+}
+
+/** A thin progress bar: how much of a week's plan is banked. */
+@Composable
+fun ProgressBar(fraction: Float, modifier: Modifier = Modifier) = Box(
+    modifier
+        .fillMaxWidth()
+        .height(6.dp)
+        .background(theme.track, CircleShape)
+) {
+    if (fraction > 0f) {
+        Box(
+            Modifier
+                .fillMaxWidth(fraction.coerceIn(0f, 1f))
+                .height(6.dp)
+                .background(theme.success, CircleShape)
+        )
     }
 }
 
