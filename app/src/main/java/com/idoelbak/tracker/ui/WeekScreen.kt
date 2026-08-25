@@ -15,6 +15,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.idoelbak.tracker.R
 import androidx.compose.ui.unit.dp
 import com.idoelbak.tracker.data.WeekRow
 import com.idoelbak.tracker.data.WeekUi
@@ -38,9 +40,9 @@ fun WeekScreen(ui: WeekUi, modifier: Modifier = Modifier) = LazyColumn(
 ) {
     item {
         Column {
-            Text("This week", style = MaterialTheme.typography.headlineMedium, color = theme.ink)
+            Text(stringResource(R.string.week_title), style = MaterialTheme.typography.headlineMedium, color = theme.ink)
             Text(
-                "${ui.from.format(DayMonth)} – ${ui.to.format(DayMonth)}",
+                stringResource(R.string.week_range, ui.from.format(DayMonth), ui.to.format(DayMonth)),
                 style = MaterialTheme.typography.bodyMedium,
                 color = theme.muted
             )
@@ -59,13 +61,13 @@ fun WeekScreen(ui: WeekUi, modifier: Modifier = Modifier) = LazyColumn(
             ProgressRing(ui.done, ui.goal)
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
                 Text(
-                    "${ui.done} of ${ui.goal} sessions",
+                    stringResource(R.string.week_sessions, ui.done, ui.goal),
                     style = MaterialTheme.typography.titleLarge,
                     color = theme.ink
                 )
                 Text(
-                    if (ui.goal == 0) "Nothing scheduled this week"
-                    else "${(ui.done * 100) / ui.goal}% of the week's plan",
+                    if (ui.goal == 0) stringResource(R.string.week_nothing)
+                    else stringResource(R.string.week_percent, (ui.done * 100) / ui.goal),
                     style = MaterialTheme.typography.bodyMedium,
                     color = theme.muted
                 )
@@ -74,7 +76,7 @@ fun WeekScreen(ui: WeekUi, modifier: Modifier = Modifier) = LazyColumn(
     }
 
     if (ui.rows.isNotEmpty()) {
-        item { SectionLabel("Every habit") }
+        item { SectionLabel(stringResource(R.string.week_every_habit)) }
     }
 
     items(ui.rows, key = { it.id }) { row -> WeekCard(row) }
@@ -101,7 +103,7 @@ private fun WeekCard(row: WeekRow) = Column(
         )
         WeekStrip(row.week)
         Text(
-            "${row.done} of ${row.goal}",
+            stringResource(R.string.count_of, row.done, row.goal),
             style = MaterialTheme.typography.labelMedium,
             color = if (row.done >= row.goal) theme.success else theme.muted
         )

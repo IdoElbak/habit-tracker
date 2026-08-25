@@ -19,11 +19,11 @@ import java.time.LocalDate
 import java.time.ZoneId
 import kotlin.math.roundToInt
 
-enum class StatsPeriod(val label: String) {
-    WEEK("Week"),
-    MONTH("Month"),
-    YEAR("Year"),
-    ALL("All");
+enum class StatsPeriod {
+    WEEK,
+    MONTH,
+    YEAR,
+    ALL;
 
     /** Where this period starts, counting back from [today]. */
     fun from(today: LocalDate, weekStart: DayOfWeek): LocalDate = when (this) {
@@ -55,8 +55,9 @@ data class StatsUi(
     val strength: List<StrengthRow> = emptyList(),
     val grid: List<List<HeatCell>> = emptyList(),
     val weekdays: List<WeekdayBar> = emptyList(),
-    /** "Saturday is your weakest day by 8 points." Null when the difference is not worth saying. */
-    val weakestDayNote: String? = null,
+    /** The weekday that drags the rest down, and by how many points. Null when it is not a finding. */
+    val weakestDay: DayOfWeek? = null,
+    val weakestGap: Int = 0,
     val trend: List<TrendPoint> = emptyList(),
     val mood: MoodFinding? = null,
     val motivation: MoodFinding? = null
@@ -92,6 +93,7 @@ internal fun buildStats(
 
     val due = counted.sumOf { it.dueCount }
     val done = counted.sumOf { it.doneCount }
+    val weakest = weakestDay(weekdayBars(counted, weekStart))
 
     return StatsUi(
         period = period,
@@ -104,7 +106,8 @@ internal fun buildStats(
         strength = strengthRows(today, weekStart, habits, ticks),
         grid = heatGrid(today, weekStart, records),
         weekdays = weekdayBars(counted, weekStart),
-        weakestDayNote = weakestDayNote(weekdayBars(counted, weekStart)),
+        weakestDay = weakest?.day,
+        weakestGap = weakest?.gap ?: 0,
         trend = trendPoints(today, weekStart, records),
         mood = MoodInsights.compare(ratedDays(inPeriod, ratings) { it.mood }),
         motivation = MoodInsights.compare(ratedDays(inPeriod, ratings) { it.motivation })
@@ -171,8 +174,10 @@ private fun weekdayBars(records: List<DayRecordEntity>, weekStart: DayOfWeek): L
         WeekdayBar(day, if (due == 0) null else (onThatDay.sumOf { it.doneCount } * 100) / due)
     }
 
-/** The most actionable sentence on the screen -- but only when the gap is real. */
-private fun weakestDayNote(bars: List<WeekdayBar>): String? {
+/** The most actionable finding on the screen -- but only when the gap is real. */
+private data class Weakest(val day: DayOfWeek, val gap: Int)
+
+private fun weakestDay(bars: List<WeekdayBar>): Weakest? {
     val known = bars.filter { it.percent != null }
     if (known.size < 4) return null
     val worst = known.minByOrNull { it.percent!! } ?: return null
@@ -180,9 +185,7 @@ private fun weakestDayNote(bars: List<WeekdayBar>): String? {
     if (others.isEmpty()) return null
     val average = others.sumOf { it.percent!! } / others.size
     val gap = average - worst.percent!!
-    if (gap < MIN_WEEKDAY_GAP) return null
-    val name = worst.day.name.lowercase().replaceFirstChar { it.uppercase() }
-    return "$name is your weakest day by $gap points."
+    return if (gap < MIN_WEEKDAY_GAP) null else Weakest(worst.day, gap)
 }
 
 private fun trendPoints(

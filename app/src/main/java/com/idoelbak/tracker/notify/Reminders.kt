@@ -77,13 +77,21 @@ object Reminders {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
         val manager = context.getSystemService<NotificationManager>() ?: return
         manager.createNotificationChannel(
-            NotificationChannel(CHANNEL_NUDGE, "Daily nudges", NotificationManager.IMPORTANCE_DEFAULT).apply {
-                description = "What is left to do today."
+            NotificationChannel(
+                CHANNEL_NUDGE,
+                context.getString(R.string.notif_channel_nudges),
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                description = context.getString(R.string.notif_channel_nudges_note)
             }
         )
         manager.createNotificationChannel(
-            NotificationChannel(CHANNEL_URGENT, "End of day", NotificationManager.IMPORTANCE_HIGH).apply {
-                description = "The countdown, and the warning when a streak is about to break."
+            NotificationChannel(
+                CHANNEL_URGENT,
+                context.getString(R.string.notif_channel_urgent),
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = context.getString(R.string.notif_channel_urgent_note)
             }
         )
     }
@@ -141,10 +149,10 @@ object Reminders {
                 }
                 post(
                     context, ID_PLAN, CHANNEL_NUDGE,
-                    "${ui.dueCount} today",
+                    context.getString(R.string.notif_plan_title, ui.dueCount),
                     buildString {
                         append(ui.due.joinToString(", ") { it.name })
-                        if (escalated > 0) append(" — and a weekly one runs out of days")
+                        if (escalated > 0) append(" " + context.getString(R.string.notif_escalation))
                     }
                 )
             }
@@ -156,8 +164,8 @@ object Reminders {
                 if (StreakEngine.streakAtRisk(state, ui.dueCount, ui.doneCount)) {
                     post(
                         context, ID_STREAK, CHANNEL_URGENT,
-                        "Your ${ui.streak}-day streak is about to break",
-                        "${ui.left} left. Finishing now keeps it.",
+                        context.getString(R.string.notif_streak_title, ui.streak),
+                        context.getString(R.string.notif_streak_body, ui.left),
                         urgent = true
                     )
                 }
@@ -165,7 +173,7 @@ object Reminders {
 
             else -> post(
                 context, ID_PROGRESS, CHANNEL_NUDGE,
-                "${ui.doneCount} of ${ui.dueCount} done",
+                context.getString(R.string.notif_progress_title, ui.doneCount, ui.dueCount),
                 ui.due.filterNot { it.done }.joinToString(", ") { it.name }
             )
         }
@@ -204,7 +212,7 @@ object Reminders {
             context = context,
             id = ID_COUNTDOWN,
             channel = CHANNEL_URGENT,
-            title = "${ui.left} left today",
+            title = context.getString(R.string.notif_countdown_title, ui.left),
             text = ui.due.filterNot { it.done }.joinToString(", ") { it.name },
             urgent = true
         ) {

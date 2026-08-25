@@ -1,5 +1,6 @@
 package com.idoelbak.tracker.ui
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,6 +23,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.idoelbak.tracker.R
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -50,12 +53,12 @@ fun StatsScreen(
 ) {
     item {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text("Stats", style = MaterialTheme.typography.headlineMedium, color = theme.ink)
+            Text(stringResource(R.string.stats_title), style = MaterialTheme.typography.headlineMedium, color = theme.ink)
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 StatsPeriod.entries.forEach { period ->
                     val on = period == ui.period
                     Text(
-                        period.label,
+                        stringResource(period.labelRes()),
                         style = MaterialTheme.typography.labelMedium,
                         color = if (on) theme.onPrimary else theme.ink2,
                         modifier = Modifier
@@ -71,9 +74,9 @@ fun StatsScreen(
     if (!ui.hasHistory) {
         item {
             Card {
-                Text("Nothing settled yet", style = MaterialTheme.typography.titleMedium, color = theme.ink)
+                Text(stringResource(R.string.stats_empty_title), style = MaterialTheme.typography.titleMedium, color = theme.ink)
                 Text(
-                    "Stats appear once a day has finished. Today is still being lived, so it is not counted here.",
+                    stringResource(R.string.stats_empty_body),
                     style = MaterialTheme.typography.bodyMedium,
                     color = theme.muted
                 )
@@ -84,16 +87,31 @@ fun StatsScreen(
 
     item {
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            BigNumber("${ui.completionPercent ?: 0}%", "completed", "${ui.daysTracked} days tracked", Modifier.weight(1f))
-            BigNumber("${ui.currentStreak}", "day streak", "best ${ui.bestStreak}", Modifier.weight(1f))
-            BigNumber("${ui.perfectDays}", "perfect days", "nothing missed", Modifier.weight(1f))
+            BigNumber(
+                stringResource(R.string.stats_percent, ui.completionPercent ?: 0),
+                stringResource(R.string.stats_completed),
+                stringResource(R.string.stats_days_tracked, ui.daysTracked),
+                Modifier.weight(1f)
+            )
+            BigNumber(
+                "${ui.currentStreak}",
+                stringResource(R.string.stats_streak),
+                stringResource(R.string.stats_best, ui.bestStreak),
+                Modifier.weight(1f)
+            )
+            BigNumber(
+                "${ui.perfectDays}",
+                stringResource(R.string.stats_perfect_days),
+                stringResource(R.string.stats_nothing_missed),
+                Modifier.weight(1f)
+            )
         }
     }
 
     if (ui.strength.isNotEmpty()) {
         item {
             Card {
-                CardTitle("Habit strength", "Dips when you miss, recovers when you practise. One bad day cannot zero it.")
+                CardTitle(stringResource(R.string.stats_strength), stringResource(R.string.stats_strength_note))
                 Column(verticalArrangement = Arrangement.spacedBy(9.dp)) {
                     ui.strength.forEach { row ->
                         Row(
@@ -124,7 +142,7 @@ fun StatsScreen(
 
     item {
         Card {
-            CardTitle("Consistency", "The last four weeks. Read down a column to see a weekday failing.")
+            CardTitle(stringResource(R.string.stats_consistency), stringResource(R.string.stats_consistency_note))
             HeatGrid(ui)
         }
     }
@@ -132,10 +150,18 @@ fun StatsScreen(
     if (ui.weekdays.any { it.percent != null }) {
         item {
             Card {
-                CardTitle("Which day you drop", "Completion rate by weekday.")
+                CardTitle(stringResource(R.string.stats_weekday), stringResource(R.string.stats_weekday_note))
                 WeekdayChart(ui.weekdays)
-                ui.weakestDayNote?.let {
-                    Text(it, style = MaterialTheme.typography.bodyMedium, color = theme.primary)
+                ui.weakestDay?.let { day ->
+                    Text(
+                        stringResource(
+                            R.string.stats_weakest_day,
+                            day.getDisplayName(TextStyle.FULL, currentLocale()),
+                            ui.weakestGap
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = theme.primary
+                    )
                 }
             }
         }
@@ -144,7 +170,7 @@ fun StatsScreen(
     if (ui.trend.size >= 2) {
         item {
             Card {
-                CardTitle("Weekly completion", "The last ${ui.trend.size} weeks.")
+                CardTitle(stringResource(R.string.stats_trend), stringResource(R.string.stats_trend_note, ui.trend.size))
                 TrendChart(ui)
             }
         }
@@ -153,9 +179,9 @@ fun StatsScreen(
     if (ui.mood != null || ui.motivation != null) {
         item {
             Card {
-                CardTitle("Mood and motivation", "Only shown when there is enough rated history to mean something.")
-                ui.mood?.let { Finding("mood", it) }
-                ui.motivation?.let { Finding("motivation", it) }
+                CardTitle(stringResource(R.string.stats_mood), stringResource(R.string.stats_mood_note))
+                ui.mood?.let { Finding(R.string.stats_mood_finding, it) }
+                ui.motivation?.let { Finding(R.string.stats_motivation_finding, it) }
             }
         }
     }
@@ -294,19 +320,35 @@ private fun TrendChart(ui: StatsUi) {
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(
-                "${ui.trend.size} wks ago",
+                stringResource(R.string.stats_weeks_ago, ui.trend.size),
                 style = MaterialTheme.typography.bodySmall,
                 color = theme.muted
             )
-            Text("this week", style = MaterialTheme.typography.bodySmall, color = theme.muted)
+            Text(
+                stringResource(R.string.stats_this_week),
+                style = MaterialTheme.typography.bodySmall,
+                color = theme.muted
+            )
         }
     }
 }
 
 @Composable
-private fun Finding(what: String, finding: MoodFinding) = Text(
-    "On low-$what days you finish ${finding.relativeDropPercent}% less — " +
-        "${finding.lowCompletionPercent}% against ${finding.highCompletionPercent}%.",
+private fun Finding(@StringRes sentence: Int, finding: MoodFinding) = Text(
+    stringResource(
+        sentence,
+        finding.relativeDropPercent,
+        finding.lowCompletionPercent,
+        finding.highCompletionPercent
+    ),
     style = MaterialTheme.typography.bodyMedium,
     color = theme.ink2
 )
+
+/** The period selector's wording lives here, not in the data layer. */
+private fun StatsPeriod.labelRes() = when (this) {
+    StatsPeriod.WEEK -> R.string.stats_period_week
+    StatsPeriod.MONTH -> R.string.stats_period_month
+    StatsPeriod.YEAR -> R.string.stats_period_year
+    StatsPeriod.ALL -> R.string.stats_period_all
+}

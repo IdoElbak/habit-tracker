@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">מעקב</string>
+    <string name="widget_description">איך היום מתקדם: מה נשאר, ומה הרצף.</string>
+
+    <!-- היום -->
+    <string name="today_title">היום</string>
+    <string name="today_done_of">%1$d מתוך %2$d הושלמו</string>
+    <string name="today_nothing_due">אין משימות להיום</string>
+    <string name="today_all_done">הכול הושלם — הרצף שמור</string>
+    <string name="today_left">נשארו %1$d</string>
+    <string name="today_section_due">להיום</string>
+    <string name="today_section_optional">רשות</string>
+    <string name="today_optional_note">לא נספר ליום — סימון כאן מוריד את המשימה מיום אחר בשבוע</string>
+    <string name="today_empty_title">עוד לא הגדרת כלום</string>
+    <string name="today_empty_body">הוסיפו הרגל ראשון והוא יופיע כאן בימים שבהם הוא נדרש.</string>
+    <string name="today_add_habit">הוספת הרגל</string>
+    <string name="today_rating_title">איך היה היום</string>
+    <string name="today_mood">מצב רוח</string>
+    <string name="today_motivation">מוטיבציה</string>
+    <string name="not_rated">—</string>
+
+    <!-- השבוע -->
+    <string name="week_title">השבוע</string>
+    <string name="week_range">%1$s – %2$s</string>
+    <string name="week_sessions">%1$d מתוך %2$d פעמים</string>
+    <string name="week_nothing">אין כלום מתוכנן השבוע</string>
+    <string name="week_percent">%1$d%% מתוכנית השבוע</string>
+    <string name="week_every_habit">כל ההרגלים</string>
+    <string name="count_of">%1$d מתוך %2$d</string>
+    <string name="quota_this_week">%1$d מתוך %2$d השבוע</string>
+
+    <!-- הרגלים -->
+    <string name="habits_title">הרגלים</string>
+    <string name="habits_subtitle">מה שהגדרת — %1$d פעילים</string>
+    <string name="habits_empty_title">אין עדיין הרגלים</string>
+    <string name="habits_empty_body">הקישו כדי להגדיר את הראשון.</string>
+    <string name="habits_edit">עריכה</string>
+    <string name="habits_archived">בארכיון</string>
+    <string name="habits_archived_note">ההיסטוריה נשמרת</string>
+    <string name="habits_restore">שחזור</string>
+    <string name="schedule_daily">כל יום</string>
+    <string name="schedule_times_per_week">%1$d פעמים בשבוע — בימים לבחירתכם</string>
+
+    <!-- הוספה ועריכה -->
+    <string name="edit_cancel">ביטול</string>
+    <string name="edit_save">שמירה</string>
+    <string name="edit_new_habit">הרגל חדש</string>
+    <string name="edit_edit_habit">עריכת הרגל</string>
+    <string name="edit_name">שם</string>
+    <string name="edit_icon">אייקון — רשות</string>
+    <string name="edit_how_often">באיזו תדירות</string>
+    <string name="edit_every_day">כל יום</string>
+    <string name="edit_every_day_note">נדרש בכל שבעת הימים</string>
+    <string name="edit_times_per_week">פעמים בשבוע</string>
+    <string name="edit_times_per_week_note">בימים לבחירתכם</string>
+    <string name="edit_specific_days">בימים האלה</string>
+    <string name="edit_specific_days_note">נדרש רק בימים שתבחרו</string>
+    <string name="edit_footnote">מתחיל להיספר מהיום. שום דבר שכבר נרשם לא משתנה.</string>
+    <string name="edit_archive">העברה לארכיון</string>
+    <string name="edit_no_icon">—</string>
+
+    <!-- סטטיסטיקה -->
+    <string name="stats_title">סטטיסטיקה</string>
+    <string name="stats_period_week">שבוע</string>
+    <string name="stats_period_month">חודש</string>
+    <string name="stats_period_year">שנה</string>
+    <string name="stats_period_all">הכול</string>
+    <string name="stats_empty_title">עוד אין ימים סגורים</string>
+    <string name="stats_empty_body">הסטטיסטיקה מופיעה אחרי שיום מסתיים. היום עוד נמשך, ולכן אינו נספר כאן.</string>
+    <string name="stats_percent">%1$d%%</string>
+    <string name="stats_completed">הושלמו</string>
+    <string name="stats_days_tracked">%1$d ימים במעקב</string>
+    <string name="stats_streak">ימי רצף</string>
+    <string name="stats_best">שיא %1$d</string>
+    <string name="stats_perfect_days">ימים מושלמים</string>
+    <string name="stats_nothing_missed">בלי אף החמצה</string>
+    <string name="stats_strength">חוזק ההרגל</string>
+    <string name="stats_strength_note">יורד כשמחמיצים, מתאושש כשמתמידים. יום אחד גרוע לא מאפס אותו.</string>
+    <string name="stats_consistency">עקביות</string>
+    <string name="stats_consistency_note">ארבעה השבועות האחרונים. קראו לאורך עמודה כדי לראות יום בשבוע שנופל.</string>
+    <string name="stats_weekday">באיזה יום אתם נופלים</string>
+    <string name="stats_weekday_note">אחוז ההשלמה לפי יום בשבוע.</string>
+    <string name="stats_weakest_day">%1$s הוא היום החלש שלכם, בפער של %2$d נקודות.</string>
+    <string name="stats_trend">השלמה שבועית</string>
+    <string name="stats_trend_note">%1$d השבועות האחרונים.</string>
+    <string name="stats_weeks_ago">לפני %1$d שבועות</string>
+    <string name="stats_this_week">השבוע</string>
+    <string name="stats_mood">מצב רוח ומוטיבציה</string>
+    <string name="stats_mood_note">מוצג רק כשיש מספיק ימים מדורגים כדי שיהיה לזה משמעות.</string>
+    <string name="stats_mood_finding">בימים עם מצב רוח נמוך אתם מסיימים %1$d%% פחות — %2$d%% מול %3$d%%.</string>
+    <string name="stats_motivation_finding">בימים עם מוטיבציה נמוכה אתם מסיימים %1$d%% פחות — %2$d%% מול %3$d%%.</string>
+
+    <!-- הגדרות -->
+    <string name="settings_title">הגדרות</string>
+    <string name="settings_done">סיום</string>
+    <string name="settings_theme">ערכת צבעים</string>
+    <string name="settings_appearance">מראה</string>
+    <string name="settings_mode_system">מערכת</string>
+    <string name="settings_mode_light">בהיר</string>
+    <string name="settings_mode_dark">כהה</string>
+    <string name="settings_language">שפה</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_language_hebrew">עברית</string>
+    <string name="settings_reminders">תזכורות</string>
+    <string name="settings_nudge_me">הזכירו לי</string>
+    <string name="settings_reminders_note">מ־22:00 התזכורת האחרונה הופכת לספירה לאחור חיה, והכול משתתק ברגע שהיום הושלם.</string>
+    <string name="settings_battery_title">שהתזכורות ימשיכו לעבוד</string>
+    <string name="settings_battery_body">סמסונג מרדימה אפליקציות שלא בשימוש, וזה מכבה תזכורות בשקט. הוציאו את האפליקציה מאופטימיזציית הסוללה, ואז בדקו בהגדרות ← סוללה ← הגבלות שימוש ברקע והסירו את מעקב מרשימת האפליקציות הישנות.</string>
+    <string name="settings_battery_action">תקנו עכשיו</string>
+    <string name="settings_your_day">היום שלכם</string>
+    <string name="settings_week_starts">השבוע מתחיל ב־</string>
+    <string name="settings_day_ends">היום נגמר ב־</string>
+    <string name="settings_day_ends_value">%1$02d:00</string>
+    <string name="settings_rollover_note">סימון ב־01:30 עדיין נספר ליום הקודם.</string>
+    <string name="settings_streaks">רצפים</string>
+    <string name="settings_streaks_title">מחמיצים אחד, והיום עדיין נספר</string>
+    <string name="settings_streaks_body">מ־%1$d הרגלים ומעלה, החמצה אחת נסלחת — ביום קל יותר נדרש הכול. אתם מחזיקים עד %2$d הקפאות, שנפדות אוטומטית ביום גרוע, ו־%3$d ימים שנספרו מחזירים אחת. אין לזה מתג: זו העסקה.</string>
+    <string name="settings_privacy">הכול נשאר בטלפון הזה. לאפליקציה אין בכלל הרשאת אינטרנט, כך שהיא לא יכולה להעלות את הנתונים שלכם גם אם תרצה.</string>
+    <string name="settings_bidi_check">בדיקת דו־כיווניות</string>
+    <string name="settings_bidi_note">בגרסאות פיתוח בלבד. כל שורה חייבת להיקרא נכון בשתי השפות: בלי מילה שקופצת לצד הלא נכון, בלי סימן פיסוק שנודד.</string>
+
+    <!-- תזכורות -->
+    <string name="notif_channel_nudges">תזכורות יומיות</string>
+    <string name="notif_channel_nudges_note">מה נשאר לעשות היום.</string>
+    <string name="notif_channel_urgent">סוף היום</string>
+    <string name="notif_channel_urgent_note">הספירה לאחור, והאזהרה כשרצף עומד להישבר.</string>
+    <string name="notif_plan_title">%1$d להיום</string>
+    <string name="notif_escalation">— ולהרגל שבועי אחד נגמרים הימים</string>
+    <string name="notif_progress_title">%1$d מתוך %2$d הושלמו</string>
+    <string name="notif_countdown_title">נשארו %1$d להיום</string>
+    <string name="notif_streak_title">רצף של %1$d ימים עומד להישבר</string>
+    <string name="notif_streak_body">נשארו %1$d. סיום עכשיו שומר עליו.</string>
+
+    <!-- ווידג\'ט -->
+    <string name="widget_streak_done">ימי רצף · הושלם</string>
+    <string name="widget_streak_left">ימי רצף · נשארו %1$d</string>
+</resources>

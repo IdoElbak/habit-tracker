@@ -46,6 +46,8 @@ android {
 
     buildFeatures {
         compose = true
+        // The bidi acceptance corpus in Settings is debug-only, and that needs BuildConfig.DEBUG.
+        buildConfig = true
     }
 
     lint {

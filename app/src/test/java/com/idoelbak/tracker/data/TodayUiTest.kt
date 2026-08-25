@@ -80,7 +80,7 @@ class TodayUiTest {
         val early = on(sunday, listOf(draw), emptyList())
         assertTrue("Sunday leaves six days for three sessions", early.due.isEmpty())
         assertEquals(listOf("Draw"), early.weekly.map { it.name })
-        assertEquals("0 of 3 this week", early.weekly.single().quota)
+        assertEquals(Quota(0, 3), early.weekly.single().quota)
 
         // Wednesday still leaves four days for three sessions -- slack.
         val wednesday = sunday.plusDays(3)

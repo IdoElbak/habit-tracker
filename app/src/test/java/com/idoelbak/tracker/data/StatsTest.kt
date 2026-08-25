@@ -5,7 +5,6 @@ import com.idoelbak.tracker.core.model.ScheduleType
 import com.idoelbak.tracker.data.db.DayRecordEntity
 import com.idoelbak.tracker.data.db.HabitEntity
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -75,15 +74,15 @@ class StatsTest {
     @Test
     fun `a weak weekday is only called out when the gap is real`() {
         val even = (1..21).map { record(today.minusDays(it.toLong()), due = 2, done = 2) }
-        assertNull("no weekday stands out", stats(even).weakestDayNote)
+        assertNull("no weekday stands out", stats(even).weakestDay)
 
         val saturdaysBad = (1..21).map {
             val date = today.minusDays(it.toLong())
             record(date, due = 2, done = if (date.dayOfWeek == DayOfWeek.SATURDAY) 0 else 2)
         }
-        val note = stats(saturdaysBad).weakestDayNote
-        assertNotNull(note)
-        assertTrue("names the day and the size of the gap", note!!.startsWith("Saturday is your weakest day by"))
+        val ui = stats(saturdaysBad)
+        assertEquals(DayOfWeek.SATURDAY, ui.weakestDay)
+        assertTrue("the gap is reported in points", ui.weakestGap >= 5)
     }
 
     @Test

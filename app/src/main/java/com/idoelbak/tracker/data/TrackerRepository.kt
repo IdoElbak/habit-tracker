@@ -41,9 +41,12 @@ data class HabitRow(
     val emoji: String?,
     val done: Boolean,
     val week: List<DayDot>,
-    /** Only for weekly-quota habits: "1 of 3 this week". */
-    val quota: String? = null
+    /** Only for weekly-quota habits: sessions banked and the quota. Worded by the UI, not here. */
+    val quota: Quota? = null
 )
+
+/** Progress against a weekly quota. */
+data class Quota(val done: Int, val goal: Int)
 
 data class TodayUi(
     val date: LocalDate,
@@ -243,7 +246,7 @@ internal fun buildToday(
             done = doneToday,
             week = weekStrip(habit, date, weekFrom, mine, weekStart),
             quota = if (habit.scheduleType == ScheduleType.TIMES_PER_WEEK) {
-                "${mine.size} of ${habit.timesPerWeek} this week"
+                Quota(mine.size, habit.timesPerWeek)
             } else {
                 null
             }

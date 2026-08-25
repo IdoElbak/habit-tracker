@@ -2,4 +2,137 @@
 <resources>
     <string name="app_name">Tracker</string>
     <string name="widget_description">How today is going: what is left, and the streak.</string>
+
+    <!-- Today -->
+    <string name="today_title">Today</string>
+    <string name="today_done_of">%1$d of %2$d done</string>
+    <string name="today_nothing_due">Nothing due today</string>
+    <string name="today_all_done">All done — streak safe</string>
+    <string name="today_left">%1$d left</string>
+    <string name="today_section_due">Due today</string>
+    <string name="today_section_optional">Optional</string>
+    <string name="today_optional_note">Doesn\'t count toward the day — ticking one takes it off a later day</string>
+    <string name="today_empty_title">Nothing defined yet</string>
+    <string name="today_empty_body">Add the first habit and it shows up here on the days it is due.</string>
+    <string name="today_add_habit">Add a habit</string>
+    <string name="today_rating_title">How was today</string>
+    <string name="today_mood">Mood</string>
+    <string name="today_motivation">Motivation</string>
+    <string name="not_rated">—</string>
+
+    <!-- Week -->
+    <string name="week_title">This week</string>
+    <string name="week_range">%1$s – %2$s</string>
+    <string name="week_sessions">%1$d of %2$d sessions</string>
+    <string name="week_nothing">Nothing scheduled this week</string>
+    <string name="week_percent">%1$d%% of the week\'s plan</string>
+    <string name="week_every_habit">Every habit</string>
+    <string name="count_of">%1$d of %2$d</string>
+    <string name="quota_this_week">%1$d of %2$d this week</string>
+
+    <!-- Habits -->
+    <string name="habits_title">Habits</string>
+    <string name="habits_subtitle">What you have defined — %1$d active</string>
+    <string name="habits_empty_title">No habits yet</string>
+    <string name="habits_empty_body">Tap to define the first one.</string>
+    <string name="habits_edit">Edit</string>
+    <string name="habits_archived">Archived</string>
+    <string name="habits_archived_note">Its history is kept</string>
+    <string name="habits_restore">Restore</string>
+    <string name="schedule_daily">Every day</string>
+    <string name="schedule_times_per_week">%1$d× per week — any days</string>
+
+    <!-- Add and edit -->
+    <string name="edit_cancel">Cancel</string>
+    <string name="edit_save">Save</string>
+    <string name="edit_new_habit">New habit</string>
+    <string name="edit_edit_habit">Edit habit</string>
+    <string name="edit_name">Name</string>
+    <string name="edit_icon">Icon — optional</string>
+    <string name="edit_how_often">How often</string>
+    <string name="edit_every_day">Every day</string>
+    <string name="edit_every_day_note">Due all seven days</string>
+    <string name="edit_times_per_week">Times per week</string>
+    <string name="edit_times_per_week_note">Any days you like</string>
+    <string name="edit_specific_days">On these days</string>
+    <string name="edit_specific_days_note">Due only on the days you pick</string>
+    <string name="edit_footnote">Starts counting from today. Nothing already tracked changes.</string>
+    <string name="edit_archive">Archive this habit</string>
+    <string name="edit_no_icon">—</string>
+
+    <!-- Stats -->
+    <string name="stats_title">Stats</string>
+    <string name="stats_period_week">Week</string>
+    <string name="stats_period_month">Month</string>
+    <string name="stats_period_year">Year</string>
+    <string name="stats_period_all">All</string>
+    <string name="stats_empty_title">Nothing settled yet</string>
+    <string name="stats_empty_body">Stats appear once a day has finished. Today is still being lived, so it is not counted here.</string>
+    <string name="stats_percent">%1$d%%</string>
+    <string name="stats_completed">completed</string>
+    <string name="stats_days_tracked">%1$d days tracked</string>
+    <string name="stats_streak">day streak</string>
+    <string name="stats_best">best %1$d</string>
+    <string name="stats_perfect_days">perfect days</string>
+    <string name="stats_nothing_missed">nothing missed</string>
+    <string name="stats_strength">Habit strength</string>
+    <string name="stats_strength_note">Dips when you miss, recovers when you practise. One bad day cannot zero it.</string>
+    <string name="stats_consistency">Consistency</string>
+    <string name="stats_consistency_note">The last four weeks. Read down a column to see a weekday failing.</string>
+    <string name="stats_weekday">Which day you drop</string>
+    <string name="stats_weekday_note">Completion rate by weekday.</string>
+    <string name="stats_weakest_day">%1$s is your weakest day by %2$d points.</string>
+    <string name="stats_trend">Weekly completion</string>
+    <string name="stats_trend_note">The last %1$d weeks.</string>
+    <string name="stats_weeks_ago">%1$d wks ago</string>
+    <string name="stats_this_week">this week</string>
+    <string name="stats_mood">Mood and motivation</string>
+    <string name="stats_mood_note">Only shown when there is enough rated history to mean something.</string>
+    <string name="stats_mood_finding">On low-mood days you finish %1$d%% less — %2$d%% against %3$d%%.</string>
+    <string name="stats_motivation_finding">On low-motivation days you finish %1$d%% less — %2$d%% against %3$d%%.</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_done">Done</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_mode_system">System</string>
+    <string name="settings_mode_light">Light</string>
+    <string name="settings_mode_dark">Dark</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_language_hebrew">עברית</string>
+    <string name="settings_reminders">Reminders</string>
+    <string name="settings_nudge_me">Nudge me</string>
+    <string name="settings_reminders_note">From 22:00 the last one turns into a live countdown, and everything goes quiet the moment the day is finished.</string>
+    <string name="settings_battery_title">Keep reminders working</string>
+    <string name="settings_battery_body">Samsung puts unused apps to sleep, which silently kills reminders. Exempt this app from battery optimisation, then check Settings → Battery → Background usage limits and remove Tracker from Sleeping apps.</string>
+    <string name="settings_battery_action">Fix it now</string>
+    <string name="settings_your_day">Your day</string>
+    <string name="settings_week_starts">Week starts</string>
+    <string name="settings_day_ends">Day ends at</string>
+    <string name="settings_day_ends_value">%1$02d:00</string>
+    <string name="settings_rollover_note">A tick at 01:30 still counts for the day before.</string>
+    <string name="settings_streaks">Streaks</string>
+    <string name="settings_streaks_title">Miss one, the day still counts</string>
+    <string name="settings_streaks_body">From %1$d habits due upward, one miss is forgiven — on a lighter day everything is required. You hold up to %2$d freezes, spent automatically on a bad day, and %3$d days that counted earn one back. There is no switch for this: it is the deal.</string>
+    <string name="settings_privacy">Everything stays on this phone. The app has no internet permission at all, so it could not upload your habits even if it wanted to.</string>
+    <string name="settings_bidi_check">Bidi check</string>
+    <string name="settings_bidi_note">Debug builds only. Every line must read correctly in both languages: no word jumping to the wrong side, no punctuation drifting.</string>
+
+    <!-- Reminders -->
+    <string name="notif_channel_nudges">Daily nudges</string>
+    <string name="notif_channel_nudges_note">What is left to do today.</string>
+    <string name="notif_channel_urgent">End of day</string>
+    <string name="notif_channel_urgent_note">The countdown, and the warning when a streak is about to break.</string>
+    <string name="notif_plan_title">%1$d today</string>
+    <string name="notif_escalation">— and a weekly one runs out of days</string>
+    <string name="notif_progress_title">%1$d of %2$d done</string>
+    <string name="notif_countdown_title">%1$d left today</string>
+    <string name="notif_streak_title">Your %1$d-day streak is about to break</string>
+    <string name="notif_streak_body">%1$d left. Finishing now keeps it.</string>
+
+    <!-- Widget -->
+    <string name="widget_streak_done">day streak · done</string>
+    <string name="widget_streak_left">day streak · %1$d left</string>
 </resources>

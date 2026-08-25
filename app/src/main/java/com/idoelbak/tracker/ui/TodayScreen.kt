@@ -22,6 +22,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.idoelbak.tracker.R
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -60,7 +62,7 @@ fun TodayScreen(
                 verticalAlignment = Alignment.Top
             ) {
                 Column {
-                    Text("Today", style = MaterialTheme.typography.headlineMedium, color = theme.ink)
+                    Text(stringResource(R.string.today_title), style = MaterialTheme.typography.headlineMedium, color = theme.ink)
                     Text(
                         ui.date.format(dateFormat),
                         style = MaterialTheme.typography.bodyMedium,
@@ -94,7 +96,7 @@ fun TodayScreen(
         }
 
         if (ui.due.isNotEmpty()) {
-            item { SectionLabel("Due today") }
+            item { SectionLabel(stringResource(R.string.today_section_due)) }
             items(ui.due, key = { it.id }) { row ->
                 HabitTickRow(row, onToggle = { onToggle(row.id) })
             }
@@ -103,9 +105,9 @@ fun TodayScreen(
         if (ui.weekly.isNotEmpty()) {
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    SectionLabel("Optional")
+                    SectionLabel(stringResource(R.string.today_section_optional))
                     Text(
-                        "Doesn't count toward the day — ticking one takes it off a later day",
+                        stringResource(R.string.today_optional_note),
                         style = MaterialTheme.typography.bodySmall,
                         color = theme.muted
                     )
@@ -134,15 +136,15 @@ private fun SummaryCard(ui: TodayUi) = Row(
     ProgressRing(ui.doneCount, ui.dueCount)
     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
         Text(
-            "${ui.doneCount} of ${ui.dueCount} done",
+            stringResource(R.string.today_done_of, ui.doneCount, ui.dueCount),
             style = MaterialTheme.typography.titleLarge,
             color = theme.ink
         )
         Text(
             when {
-                ui.dueCount == 0 -> "Nothing due today"
-                ui.left == 0 -> "All done — streak safe"
-                else -> "${ui.left} left"
+                ui.dueCount == 0 -> stringResource(R.string.today_nothing_due)
+                ui.left == 0 -> stringResource(R.string.today_all_done)
+                else -> stringResource(R.string.today_left, ui.left)
             },
             style = MaterialTheme.typography.bodyMedium,
             color = theme.muted
@@ -174,8 +176,12 @@ private fun HabitTickRow(row: HabitRow, onToggle: () -> Unit, quiet: Boolean = f
             color = if (row.done) theme.muted else theme.ink,
             textDecoration = if (row.done) TextDecoration.LineThrough else null
         )
-        row.quota?.let {
-            Text(it, style = MaterialTheme.typography.bodySmall, color = theme.muted)
+        row.quota?.let { quota ->
+            Text(
+                stringResource(R.string.quota_this_week, quota.done, quota.goal),
+                style = MaterialTheme.typography.bodySmall,
+                color = theme.muted
+            )
         }
     }
     WeekStrip(row.week)
@@ -190,15 +196,15 @@ private fun EmptyState(onAdd: () -> Unit) = Column(
         .padding(20.dp),
     verticalArrangement = Arrangement.spacedBy(6.dp)
 ) {
-    Text("Nothing defined yet", style = MaterialTheme.typography.titleMedium, color = theme.ink)
+    Text(stringResource(R.string.today_empty_title), style = MaterialTheme.typography.titleMedium, color = theme.ink)
     Text(
-        "Add the first habit and it shows up here on the days it is due.",
+        stringResource(R.string.today_empty_body),
         style = MaterialTheme.typography.bodyMedium,
         color = theme.muted
     )
     Box(Modifier.padding(top = 8.dp)) {
         Pill(theme.primary) {
-            Text("Add a habit", style = MaterialTheme.typography.labelMedium, color = theme.onPrimary)
+            Text(stringResource(R.string.today_add_habit), style = MaterialTheme.typography.labelMedium, color = theme.onPrimary)
         }
     }
 }
@@ -212,9 +218,9 @@ private fun RatingCard(ui: TodayUi, onRate: (Int?, Int?) -> Unit) = Column(
         .padding(16.dp),
     verticalArrangement = Arrangement.spacedBy(10.dp)
 ) {
-    SectionLabel("How was today")
-    RatingSlider("Mood", ui.mood) { onRate(it, ui.motivation) }
-    RatingSlider("Motivation", ui.motivation) { onRate(ui.mood, it) }
+    SectionLabel(stringResource(R.string.today_rating_title))
+    RatingSlider(stringResource(R.string.today_mood), ui.mood) { onRate(it, ui.motivation) }
+    RatingSlider(stringResource(R.string.today_motivation), ui.motivation) { onRate(ui.mood, it) }
 }
 
 @Composable
@@ -242,7 +248,7 @@ private fun RatingSlider(label: String, value: Int?, onChange: (Int) -> Unit) = 
         )
     )
     Text(
-        value?.toString() ?: "—",
+        value?.toString() ?: stringResource(R.string.not_rated),
         style = MaterialTheme.typography.labelLarge,
         color = if (value == null) theme.muted else theme.ink,
         fontWeight = FontWeight.W700,

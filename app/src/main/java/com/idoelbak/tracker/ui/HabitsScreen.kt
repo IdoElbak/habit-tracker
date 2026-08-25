@@ -16,6 +16,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.idoelbak.tracker.R
 import androidx.compose.ui.unit.dp
 import com.idoelbak.tracker.core.model.ScheduleType
 import com.idoelbak.tracker.data.db.HabitEntity
@@ -49,9 +51,9 @@ fun HabitsScreen(
     ) {
         item {
             Column {
-                Text("Habits", style = MaterialTheme.typography.headlineMedium, color = theme.ink)
+                Text(stringResource(R.string.habits_title), style = MaterialTheme.typography.headlineMedium, color = theme.ink)
                 Text(
-                    "What you have defined — ${active.size} active",
+                    stringResource(R.string.habits_subtitle, active.size),
                     style = MaterialTheme.typography.bodyMedium,
                     color = theme.muted
                 )
@@ -68,9 +70,9 @@ fun HabitsScreen(
                         .padding(20.dp),
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Text("No habits yet", style = MaterialTheme.typography.titleMedium, color = theme.ink)
+                    Text(stringResource(R.string.habits_empty_title), style = MaterialTheme.typography.titleMedium, color = theme.ink)
                     Text(
-                        "Tap to define the first one.",
+                        stringResource(R.string.habits_empty_body),
                         style = MaterialTheme.typography.bodyMedium,
                         color = theme.muted
                     )
@@ -100,12 +102,12 @@ fun HabitsScreen(
                         color = theme.muted
                     )
                 }
-                Text("Edit", style = MaterialTheme.typography.labelMedium, color = theme.primary)
+                Text(stringResource(R.string.habits_edit), style = MaterialTheme.typography.labelMedium, color = theme.primary)
             }
         }
 
         if (archived.isNotEmpty()) {
-            item { SectionLabel("Archived", Modifier.padding(top = 10.dp)) }
+            item { SectionLabel(stringResource(R.string.habits_archived), Modifier.padding(top = 10.dp)) }
             items(archived, key = { it.id }) { habit ->
                 Row(
                     Modifier
@@ -122,13 +124,13 @@ fun HabitsScreen(
                             color = theme.muted
                         )
                         Text(
-                            "Its history is kept",
+                            stringResource(R.string.habits_archived_note),
                             style = MaterialTheme.typography.bodySmall,
                             color = theme.muted
                         )
                     }
                     Text(
-                        "Restore",
+                        stringResource(R.string.habits_restore),
                         style = MaterialTheme.typography.labelMedium,
                         color = theme.primary,
                         modifier = Modifier.clickable { onUnarchive(habit.id) }
@@ -142,9 +144,10 @@ fun HabitsScreen(
 private fun label(habit: HabitEntity) = listOfNotNull(habit.emoji, habit.name).joinToString(" ")
 
 /** "Every day", "3× per week", "Sun Tue Thu". */
+@Composable
 private fun scheduleLabel(habit: HabitEntity, locale: Locale): String = when (habit.scheduleType) {
-    ScheduleType.DAILY -> "Every day"
-    ScheduleType.TIMES_PER_WEEK -> "${habit.timesPerWeek}× per week — any days"
+    ScheduleType.DAILY -> stringResource(R.string.schedule_daily)
+    ScheduleType.TIMES_PER_WEEK -> stringResource(R.string.schedule_times_per_week, habit.timesPerWeek)
     ScheduleType.SPECIFIC_DAYS -> weekdaysFrom(habit.weekdayMask, locale)
 }
 

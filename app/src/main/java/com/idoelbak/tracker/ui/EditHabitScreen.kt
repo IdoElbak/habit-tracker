@@ -26,6 +26,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.idoelbak.tracker.R
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -34,6 +36,7 @@ import com.idoelbak.tracker.core.model.ScheduleType
 import com.idoelbak.tracker.core.model.bit
 import com.idoelbak.tracker.data.db.HabitEntity
 import com.idoelbak.tracker.ui.theme.theme
+import java.time.format.TextStyle
 import java.time.DayOfWeek
 
 /** A small set that covers most habits; anything else goes in with the keyboard. */
@@ -64,6 +67,7 @@ fun EditHabitScreen(
     var type by remember(existing) { mutableStateOf(existing?.scheduleType ?: ScheduleType.DAILY) }
     var times by remember(existing) { mutableIntStateOf(existing?.timesPerWeek?.takeIf { it > 0 } ?: 3) }
     var mask by remember(existing) { mutableIntStateOf(existing?.weekdayMask ?: 0) }
+    val locale = currentLocale()
 
     val valid = name.isNotBlank() && (type != ScheduleType.SPECIFIC_DAYS || mask != 0)
 
@@ -79,18 +83,19 @@ fun EditHabitScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    "Cancel",
+                    stringResource(R.string.edit_cancel),
                     style = MaterialTheme.typography.bodyLarge,
                     color = theme.muted,
                     modifier = Modifier.clickable(onClick = onCancel)
                 )
                 Text(
-                    if (existing == null) "New habit" else "Edit habit",
+                    if (existing == null) stringResource(R.string.edit_new_habit)
+                    else stringResource(R.string.edit_edit_habit),
                     style = MaterialTheme.typography.titleMedium,
                     color = theme.ink
                 )
                 Text(
-                    "Save",
+                    stringResource(R.string.edit_save),
                     style = MaterialTheme.typography.titleMedium,
                     color = if (valid) theme.primary else theme.muted,
                     modifier = Modifier.clickable(enabled = valid) {
@@ -102,7 +107,7 @@ fun EditHabitScreen(
 
         item {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                SectionLabel("Name")
+                SectionLabel(stringResource(R.string.edit_name))
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
@@ -124,7 +129,7 @@ fun EditHabitScreen(
 
         item {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                SectionLabel("Icon — optional")
+                SectionLabel(stringResource(R.string.edit_icon))
                 Row(
                     Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -147,18 +152,18 @@ fun EditHabitScreen(
 
         item {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                SectionLabel("How often")
+                SectionLabel(stringResource(R.string.edit_how_often))
 
                 Option(
-                    title = "Every day",
-                    subtitle = "Due all seven days",
+                    title = stringResource(R.string.edit_every_day),
+                    subtitle = stringResource(R.string.edit_every_day_note),
                     selected = type == ScheduleType.DAILY,
                     onSelect = { type = ScheduleType.DAILY }
                 )
 
                 Option(
-                    title = "Times per week",
-                    subtitle = "Any days you like",
+                    title = stringResource(R.string.edit_times_per_week),
+                    subtitle = stringResource(R.string.edit_times_per_week_note),
                     selected = type == ScheduleType.TIMES_PER_WEEK,
                     onSelect = { type = ScheduleType.TIMES_PER_WEEK }
                 ) {
@@ -177,8 +182,8 @@ fun EditHabitScreen(
                 }
 
                 Option(
-                    title = "On these days",
-                    subtitle = "Due only on the days you pick",
+                    title = stringResource(R.string.edit_specific_days),
+                    subtitle = stringResource(R.string.edit_specific_days_note),
                     selected = type == ScheduleType.SPECIFIC_DAYS,
                     onSelect = { type = ScheduleType.SPECIFIC_DAYS }
                 )
@@ -201,7 +206,7 @@ fun EditHabitScreen(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    day.name.take(1),
+                                    day.getDisplayName(TextStyle.NARROW, locale),
                                     style = MaterialTheme.typography.labelMedium,
                                     color = if (on) theme.onPrimary else theme.muted
                                 )
@@ -214,7 +219,7 @@ fun EditHabitScreen(
 
         item {
             Text(
-                "Starts counting from today. Nothing already tracked changes.",
+                stringResource(R.string.edit_footnote),
                 style = MaterialTheme.typography.bodySmall,
                 color = theme.muted
             )
@@ -223,7 +228,7 @@ fun EditHabitScreen(
         if (existing != null) {
             item {
                 Text(
-                    "Archive this habit",
+                    stringResource(R.string.edit_archive),
                     style = MaterialTheme.typography.bodyLarge,
                     color = theme.muted,
                     textAlign = TextAlign.Center,
@@ -254,7 +259,7 @@ private fun EmojiChip(value: String?, selected: Boolean, onPick: () -> Unit) = B
     contentAlignment = Alignment.Center
 ) {
     Text(
-        value ?: "—",
+        value ?: stringResource(R.string.edit_no_icon),
         style = MaterialTheme.typography.bodyLarge,
         color = if (selected && value == null) theme.onPrimary else theme.ink
     )

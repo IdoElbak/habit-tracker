@@ -20,9 +20,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.idoelbak.tracker.R
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
+import com.idoelbak.tracker.BuildConfig
 import com.idoelbak.tracker.core.engine.DayBoundary
 import com.idoelbak.tracker.core.engine.StreakEngine
 import com.idoelbak.tracker.data.Settings
@@ -35,6 +40,42 @@ import java.time.DayOfWeek
 import java.time.format.TextStyle
 
 private val WeekStartChoices = listOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY, DayOfWeek.MONDAY)
+
+private val Languages = listOf(
+    "en" to R.string.settings_language_english,
+    "iw" to R.string.settings_language_hebrew
+)
+
+/**
+ * The strings that break bidirectional text when it is done wrong: Hebrew with a trailing question
+ * mark, an English word inside Hebrew, grouped digits, parentheses, a sentence ending in the other
+ * language. Every one must read correctly in both app languages, which is what `isolated()` and
+ * `TextDirection.Content` are for. Debug builds only.
+ */
+private val BidiCorpus = listOf(
+    "האם קראתי היום?",
+    "לקרוא 10 pages ביום",
+    "ללכת 10,000 צעדים",
+    "מדיטציה (5 min) בבוקר",
+    "ללמוד Russian",
+    "Workout אימון 3x",
+    "Read ספר daily!"
+)
+
+/** The app language as the user has chosen it, or the system's if they have not. */
+@Composable
+private fun currentLanguageTag(): String =
+    AppCompatDelegate.getApplicationLocales()[0]?.language
+        ?: currentLocale().language
+
+private fun setLanguage(tag: String) =
+    AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(tag))
+
+private fun ThemeMode.labelRes() = when (this) {
+    ThemeMode.SYSTEM -> R.string.settings_mode_system
+    ThemeMode.LIGHT -> R.string.settings_mode_light
+    ThemeMode.DARK -> R.string.settings_mode_dark
+}
 
 /**
  * The choices that change how the whole app behaves. Everything here is stored in DataStore and read
@@ -62,13 +103,13 @@ fun SettingsScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                "Done",
+                stringResource(R.string.settings_done),
                 style = MaterialTheme.typography.bodyLarge,
                 color = theme.primary,
                 modifier = Modifier.clickable(onClick = onBack)
             )
             Text(
-                "Settings",
+                stringResource(R.string.settings_title),
                 style = MaterialTheme.typography.headlineMedium,
                 color = theme.ink,
                 modifier = Modifier.weight(1f)
@@ -77,7 +118,7 @@ fun SettingsScreen(
     }
 
     item {
-        Section("Theme") {
+        Section(stringResource(R.string.settings_theme)) {
             Palettes.all.chunked(2).forEach { pair ->
                 Row(
                     Modifier.fillMaxWidth(),
@@ -97,7 +138,7 @@ fun SettingsScreen(
     }
 
     item {
-        Section("Appearance") {
+        Section(stringResource(R.string.settings_appearance)) {
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -105,7 +146,7 @@ fun SettingsScreen(
                 ThemeMode.entries.forEach { mode ->
                     val on = mode == settings.themeMode
                     Text(
-                        mode.name.lowercase().replaceFirstChar { it.uppercase() },
+                        stringResource(mode.labelRes()),
                         style = MaterialTheme.typography.labelMedium,
                         color = if (on) theme.onPrimary else theme.ink2,
                         textAlign = TextAlign.Center,
@@ -121,7 +162,7 @@ fun SettingsScreen(
     }
 
     item {
-        Section("Reminders") {
+        Section(stringResource(R.string.settings_reminders)) {
             Column(
                 Modifier
                     .fillMaxWidth()
@@ -136,7 +177,7 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                        Text("Nudge me", style = MaterialTheme.typography.bodyLarge, color = theme.ink)
+                        Text(stringResource(R.string.settings_nudge_me), style = MaterialTheme.typography.bodyLarge, color = theme.ink)
                         Text(
                             Reminders.SLOTS.joinToString(" · ") { "%02d:%02d".format(it.hour, it.minute) },
                             style = MaterialTheme.typography.bodySmall,
@@ -147,8 +188,7 @@ fun SettingsScreen(
                 }
                 Box(Modifier.fillMaxWidth().height(1.dp).background(theme.rule))
                 Text(
-                    "From 22:00 the last one turns into a live countdown, and everything goes quiet " +
-                        "the moment the day is finished.",
+                    stringResource(R.string.settings_reminders_note),
                     style = MaterialTheme.typography.bodySmall,
                     color = theme.muted,
                     modifier = Modifier.padding(16.dp, 12.dp)
@@ -164,19 +204,17 @@ fun SettingsScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    "Keep reminders working",
+                    stringResource(R.string.settings_battery_title),
                     style = MaterialTheme.typography.titleMedium,
                     color = theme.ink
                 )
                 Text(
-                    "Samsung puts unused apps to sleep, which silently kills reminders. Exempt this " +
-                        "app from battery optimisation, then check Settings → Battery → Background " +
-                        "usage limits and remove Tracker from Sleeping apps.",
+                    stringResource(R.string.settings_battery_body),
                     style = MaterialTheme.typography.bodyMedium,
                     color = theme.muted
                 )
                 Text(
-                    "Fix it now",
+                    stringResource(R.string.settings_battery_action),
                     style = MaterialTheme.typography.labelMedium,
                     color = theme.onPrimary,
                     modifier = Modifier
@@ -189,7 +227,7 @@ fun SettingsScreen(
     }
 
     item {
-        Section("Your day") {
+        Section(stringResource(R.string.settings_your_day)) {
             Column(
                 Modifier
                     .fillMaxWidth()
@@ -203,7 +241,7 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        "Week starts",
+                        stringResource(R.string.settings_week_starts),
                         style = MaterialTheme.typography.bodyLarge,
                         color = theme.ink,
                         modifier = Modifier.weight(1f)
@@ -230,20 +268,20 @@ fun SettingsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        "Day ends at",
+                        stringResource(R.string.settings_day_ends),
                         style = MaterialTheme.typography.bodyLarge,
                         color = theme.ink,
                         modifier = Modifier.weight(1f)
                     )
                     Text(
-                        "%02d:00".format(DayBoundary.DEFAULT_ROLLOVER_HOUR),
+                        stringResource(R.string.settings_day_ends_value, DayBoundary.DEFAULT_ROLLOVER_HOUR),
                         style = MaterialTheme.typography.labelMedium,
                         color = theme.muted
                     )
                 }
             }
             Text(
-                "A tick at 01:30 still counts for the day before.",
+                stringResource(R.string.settings_rollover_note),
                 style = MaterialTheme.typography.bodySmall,
                 color = theme.muted
             )
@@ -251,7 +289,7 @@ fun SettingsScreen(
     }
 
     item {
-        Section("Streaks") {
+        Section(stringResource(R.string.settings_streaks)) {
             Column(
                 Modifier
                     .fillMaxWidth()
@@ -260,16 +298,17 @@ fun SettingsScreen(
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Text(
-                    "Miss one, the day still counts",
+                    stringResource(R.string.settings_streaks_title),
                     style = MaterialTheme.typography.titleMedium,
                     color = theme.ink
                 )
                 Text(
-                    "From ${StreakEngine.ALLOWANCE_MIN_DUE} habits due upward, one miss is forgiven — " +
-                        "on a lighter day everything is required. You hold up to " +
-                        "${StreakEngine.MAX_FREEZES} freezes, spent automatically on a bad day, and " +
-                        "${StreakEngine.CLEAN_DAYS_PER_FREEZE} days that counted earn one back. " +
-                        "There is no switch for this: it is the deal.",
+                    stringResource(
+                        R.string.settings_streaks_body,
+                        StreakEngine.ALLOWANCE_MIN_DUE,
+                        StreakEngine.MAX_FREEZES,
+                        StreakEngine.CLEAN_DAYS_PER_FREEZE
+                    ),
                     style = MaterialTheme.typography.bodyMedium,
                     color = theme.muted
                 )
@@ -278,9 +317,59 @@ fun SettingsScreen(
     }
 
     item {
+        Section(stringResource(R.string.settings_language)) {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Languages.forEach { (tag, label) ->
+                    val on = tag == currentLanguageTag()
+                    Text(
+                        stringResource(label),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = if (on) theme.onPrimary else theme.ink2,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(if (on) theme.primary else theme.surface, CircleShape)
+                            .clickable { setLanguage(tag) }
+                            .padding(vertical = 11.dp)
+                    )
+                }
+            }
+        }
+    }
+
+    if (BuildConfig.DEBUG) {
+        item {
+            Section(stringResource(R.string.settings_bidi_check)) {
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .background(theme.surface, RoundedCornerShape(16.dp))
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        stringResource(R.string.settings_bidi_note),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = theme.muted
+                    )
+                    BidiCorpus.forEach { line ->
+                        Text(
+                            line.isolated(),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = theme.ink
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    item {
         Text(
-            "Everything stays on this phone. The app has no internet permission at all, so it could " +
-                "not upload your habits even if it wanted to.",
+            stringResource(R.string.settings_privacy),
             style = MaterialTheme.typography.bodySmall,
             color = theme.muted
         )

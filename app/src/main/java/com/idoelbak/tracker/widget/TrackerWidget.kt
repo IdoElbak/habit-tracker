@@ -34,6 +34,7 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import com.idoelbak.tracker.MainActivity
+import com.idoelbak.tracker.R
 import com.idoelbak.tracker.data.Prefs
 import com.idoelbak.tracker.data.TodayUi
 import com.idoelbak.tracker.data.TrackerRepository
@@ -111,7 +112,8 @@ private fun Content(context: Context, ui: TodayUi, tokens: Tokens) {
                     )
                 )
                 Text(
-                    if (ui.left == 0) "day streak · done" else "day streak · ${ui.left} left",
+                    if (ui.left == 0) context.getString(R.string.widget_streak_done)
+                    else context.getString(R.string.widget_streak_left, ui.left),
                     style = TextStyle(color = ColorProvider(tokens.muted), fontSize = 11.sp())
                 )
             }
