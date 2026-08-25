@@ -642,68 +642,59 @@ tested. compileSdk is compile-time API surface only and does not restrict which 
 
 ## 6. Next steps
 
-### Deliberately left out of Phase 3 — add when there is a consumer
+### Everything phases 3-10 deliberately left out
+
+Nothing here is forgotten; each one is waiting for a reason to exist.
 
 - **Category chips on the add screen.** `CategoryEntity` and `CategoryDao` exist and are unused by
-  the UI. Nothing groups by category yet, so the picker would be decoration. Add it when Analytics
-  groups by category.
-- **Per-habit reminder time.** The `reminderMinuteOfDay` column exists; there is no scheduler yet, so
-  a control that sets it would do nothing. Add it with Phase 6.
-- **DataStore for the selected palette and light/dark override.** Palettes are already data and the
-  theme takes a `Palette` parameter — the picker and its persistence belong to Phase 5, where they
-  have a screen to live on.
+  the UI. Nothing groups by category, so the picker would be decoration.
+- **Per-habit reminder times.** The `reminderMinuteOfDay` column exists and the scheduler now does
+  too, so this is a real option: it needs a time picker on the edit screen and one more alarm slot.
+- **The per-habit detail screen** (`design/HabitDetail.dc.html`). The strength bars already answer
+  "which habit is failing". The natural entry point when it is wanted is tapping a strength row.
 - **Spreadsheet name suggestions** as ignorable chips on the Add screen.
-- **Launcher icon.** The app currently ships the system default. Needed before the release APK.
+- **A second widget size.** One responsive widget covers 1×1 and 2×1; a separate 2×1 provider would
+  be a second thing to keep in step for no gain.
+- **A WorkManager refresh pass.** `updatePeriodMillis` (30 min) turned out to be the whole periodic
+  story, and every tick refreshes the widget directly.
+- **Milestone celebrations.** Gamification was scoped to these and they are not built yet.
 
-### Phase 4 as built — and what it left out
+### Where each phase's real decisions are written down
 
-The Stats screen has the period selector (Week / Month / Year / All), three headline numbers, habit
-strength bars, the four-week consistency grid, weekday bars with the weakest-day sentence, the
-eight-week trend line, and the mood/motivation findings. `buildStats()` in `data/Stats.kt` is pure
-and tested; the screen only draws.
+Section 4 has the reasoning. The short version of what shipped after Phase 2:
 
-Two decisions worth knowing:
+- **3 · Today / Week / Habits** — the page split and the "only what is due today" rule.
+- **4 · Stats** — settled days only; a day with nothing due is left out of the percentage entirely
+  rather than counted as a zero.
+- **5 · Settings** — palettes, appearance, week start, reminders, the Samsung battery card. The week
+  start moved out of the repository and is now passed in, so nothing holds mutable settings state.
+- **6 · Reminders** — six slots, one alarm booking the next, inexact by choice, silent once the day
+  is done, and BOOT_COMPLETED so a reboot does not quietly end them.
+- **7 · Widget** — one responsive widget; the ring is a Bitmap because Glance cannot draw.
+- **8 · Hebrew** — every string is a resource, `values-iw` is complete, and the bidi corpus ships as
+  a debug card in Settings. Wording that had leaked into the data layer came back out.
+- **9 · Backup** — versioned JSON, CSV, and a restore that replaces rather than merges.
+- **10 · CI** — `check.yml` on every push, `release.yml` on a `v*` tag.
 
-- **Stats count settled days only.** Today is excluded because it has not closed — counting it would
-  drag every percentage down all morning and back up all evening. The empty state says so.
-- **The per-habit detail screen (`design/HabitDetail.dc.html`) was not built.** The strength bars
-  already answer "which habit is failing", and a detail view is a second full screen for a question
-  the list mostly answers. Add it when the strength row genuinely needs somewhere to lead —
-  the natural entry point is tapping a strength row.
+### Immediately — Phase 11: on-device verification
 
-### Immediately — Phase 5: Settings
+Everything below needs the actual phone. Build and install with:
 
-Build against `design/Settings.dc.html`. Everything it needs already exists as data:
-
-1. **Palette picker** — `Palettes.all` is a list of 7; `TrackerTheme(palette = …)` already takes one.
-   Persist the choice in DataStore (the dependency is declared, unused so far) and read it in
-   `TrackerApp` before `TrackerTheme`.
-2. **Light / dark / system override** — `TrackerTheme` already takes `dark: Boolean`.
-3. **Week start** — currently the constant `TrackerRepository.weekStart` with a `ponytail:` comment
-   on it. Moving it to DataStore is the whole change; every date question already routes through it.
-4. **Language** — `AppCompatDelegate.setApplicationLocales` plus `locales_config.xml`. MainActivity
-   is already an `AppCompatActivity` for exactly this.
-5. **Samsung battery card** — `ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS`, and the walkthrough for
-   Settings → Battery → Background usage limits. This matters more than it looks: One UI silently
-   killing alarms is the single most common reason habit reminders stop working.
-
-The Settings route already exists (gear in the Today header) and currently renders a placeholder.
-
-Remaining phases in order: 6 Notifications · 7 Widgets · 8 Hebrew/bidi · 9 Export/import ·
-10 CI + APK release flow · 11 On-device verification.
+```bash
+export JAVA_HOME="C:/Program Files/Java/jdk-21.0.10"
+./gradlew installDebug        # adb pair over Wi-Fi first, or a cable
+```
 
 ### Blocked on Ido
 
-- **Creating the GitHub remote and pushing.** Claude Code's permission classifier refused
-  `gh repo create --public --push`. He runs it himself:
-  `! gh repo create habit-tracker --public --source=. --remote=origin --push`
-  (or approves the same command when prompted). The ten local commits are ready to go.
-- **The keystore** for Phase 10's release flow — generated once, never committed, base64'd into
-  repo secrets `KEYSTORE_BASE64` / `KEYSTORE_PASSWORD` / `KEY_ALIAS` / `KEY_PASSWORD`.
-- **Design canvas feedback** — not blocking.
-- **Whether "This week" belongs on Today at all.** Weekly-quota habits with slack currently sit in
-  their own optional section there, per the approved design. If he meant those to be Habits-page-only
-  too, it is one `when` branch in `buildToday()`.
+- **The keystore.** The only thing standing between the repo and a downloadable APK. Generate once,
+  never commit, set four repo secrets — exact commands in the README under "Releasing". Then
+  `git tag v0.1.0 && git push origin v0.1.0` and the workflow does the rest.
+- **On-device verification** — the checklist below.
+- **Design canvas feedback** — not blocking; nothing built depends on it.
+- **Whether "Optional" belongs on Today at all.** Weekly-quota habits with slack sit in their own
+  section there, which Ido confirmed. If he changes his mind it is one `when` branch in
+  `buildToday()`.
 
 ### On-device verification checklist (Phase 11, cannot be automated)
 
@@ -715,6 +706,10 @@ Remaining phases in order: 6 Notifications · 7 Widgets · 8 Hebrew/bidi · 9 Ex
 6. Switch all 7 palettes in light and dark.
 7. Export → wipe → import; confirm streak and history restore.
 8. Install the release APK over the debug build via the README link; confirm data survives.
+9. Turn reminders off in Settings and confirm nothing fires; turn them back on and confirm the next
+   slot books itself.
+10. Restore a backup and confirm the confirmation dialog reports the right counts before it replaces
+    anything.
 
 ---
 
@@ -726,10 +721,12 @@ Remaining phases in order: 6 Notifications · 7 Widgets · 8 Hebrew/bidi · 9 Ex
    Five new tests in `TodayUiTest`.
 3. **Phase 3 shipped**: theme layer with 7 palettes, both variable fonts in `res/font`, the
    repository, Today / Habits / Add-Edit screens, nav and bottom bar. `assembleDebug` is green.
-4. **Phase 4 shipped too**: the Stats screen, with `buildStats()` as a pure tested function.
-5. **Git repo initialised**, commits by area (scaffold, engine, data, design, UI, freeze fix, page
-   split, stats). The GitHub remote is the one thing still outstanding — the permission classifier
-   refuses `gh repo create --public --push` from a tool call, twice asked.
+4. **Phases 4 through 10 all shipped** in the same session: Stats, Settings, reminders, the widget,
+   Hebrew, backup/restore, and CI. Each is one commit with its reasoning in the message.
+5. **The repo is live** at https://github.com/IdoElbak/habit-tracker and CI is green on a clean
+   runner. Creating it needed `Bash(gh repo create:*)` and `Bash(git push:*)` in
+   `.claude/settings.local.json` — the auto-mode classifier refuses outward-facing actions otherwise.
+6. **What is left is Ido's**: the keystore, and walking the on-device checklist.
 
 Two judgement calls worth re-reading above: what was deliberately left out of Phase 3, and the open
 question about whether "This week" belongs on Today.
