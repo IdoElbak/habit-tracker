@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      AppCompat DayNight, so AppCompatActivity is happy and the system bars follow light/dark.
+      Everything the app actually draws is themed in Compose from the palette tokens.
+    -->
+    <style name="Theme.Tracker" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+</resources>

@@ -1,0 +1,27 @@
+# Build output
+build/
+.gradle/
+app/build/
+*.apk
+*.aab
+
+# Local machine config -- never commit, contains absolute paths
+local.properties
+
+# Signing material -- NEVER commit. Updates break if the key changes.
+*.jks
+*.keystore
+keystore.properties
+signing/
+
+# IDE
+.idea/
+*.iml
+.kotlin/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Local tooling pulled in for this project
+.tools/

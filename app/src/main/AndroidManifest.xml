@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+      No INTERNET permission, deliberately. Everything stays on the device, so the app is
+      structurally incapable of sending habit data anywhere.
+    -->
+
+    <!-- Runtime-requested on Android 13+. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Reminders have to be rescheduled after a reboot or they silently stop. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!--
+      Samsung's One UI puts unused apps to sleep and kills their alarms. The first-run setup screen
+      uses this to ask for an exemption. There is deliberately no SCHEDULE_EXACT_ALARM: habit
+      reminders do not need second accuracy, so inexact doze-tolerant alarms avoid the permission
+      entirely.
+    -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <application
+        android:allowBackup="true"
+        android:fullBackupContent="true"
+        android:label="Tracker"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Tracker">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="Tracker"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest>
