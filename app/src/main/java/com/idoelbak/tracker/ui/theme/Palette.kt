@@ -21,7 +21,12 @@ data class Tokens(
     /** The unfilled part of a ring or bar. */
     val track: Color,
     /** Hairline borders and dividers. */
-    val rule: Color
+    val rule: Color,
+    /**
+     * Five steps for the consistency grid, quiet to strong. One hue, never a rainbow: the grid is
+     * read as intensity, and a rainbow makes an empty day compete with a full one for attention.
+     */
+    val heat: List<Color>
 )
 
 data class Palette(
@@ -75,7 +80,8 @@ private fun palette(
         ink2 = LightInk2,
         muted = LightMuted,
         track = mix(lightBackground, LightInk, 0.12f),
-        rule = mix(lightBackground, LightInk, 0.07f)
+        rule = mix(lightBackground, LightInk, 0.07f),
+        heat = ramp(mix(lightBackground, Color.White, 0.3f), mix(success, Color.Black, 0.18f))
     ),
     dark = Tokens(
         background = DarkBackground,
@@ -88,9 +94,13 @@ private fun palette(
         ink2 = DarkInk2,
         muted = DarkMuted,
         track = DarkTrack,
-        rule = DarkRule
+        rule = DarkRule,
+        heat = ramp(DarkSurfaceAlt, mix(success, Color.White, 0.25f))
     )
 )
+
+/** Five steps from an almost-empty square to a full one. */
+private fun ramp(from: Color, to: Color) = listOf(0f, 0.28f, 0.5f, 0.74f, 1f).map { mix(from, to, it) }
 
 object Palettes {
 
@@ -109,7 +119,12 @@ object Palettes {
             ink2 = Color(0xFF4E5765),
             muted = Color(0xFF767E8B),
             track = Color(0xFFD9D4C6),
-            rule = Color(0xFFE6E0D2)
+            rule = Color(0xFFE6E0D2),
+            // The exact ramp drawn on the design canvas.
+            heat = listOf(
+                Color(0xFFF0ECE0), Color(0xFFD4DCBF), Color(0xFFB2C094),
+                Color(0xFF8FA16C), Color(0xFF6B7C47)
+            )
         ),
         dark = Tokens(
             background = Color(0xFF16181D),
@@ -122,7 +137,11 @@ object Palettes {
             ink2 = Color(0xFFB4BBC7),
             muted = Color(0xFF8A93A3),
             track = Color(0xFF333944),
-            rule = Color(0xFF2A303A)
+            rule = Color(0xFF2A303A),
+            heat = listOf(
+                Color(0xFF262C36), Color(0xFF3B4A38), Color(0xFF546A44),
+                Color(0xFF7B9457), Color(0xFF9DB37A)
+            )
         )
     )
 

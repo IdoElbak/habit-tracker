@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.idoelbak.tracker.core.model.Schedule
+import com.idoelbak.tracker.data.StatsPeriod
+import com.idoelbak.tracker.data.StatsUi
 import com.idoelbak.tracker.data.TodayUi
 import com.idoelbak.tracker.data.WeekUi
 import com.idoelbak.tracker.data.db.HabitEntity
@@ -11,6 +13,7 @@ import com.idoelbak.tracker.data.TrackerRepository
 import com.idoelbak.tracker.data.db.TrackerDatabase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -44,6 +47,14 @@ class TrackerViewModel(app: Application) : AndroidViewModel(app) {
 
     val habits: StateFlow<List<HabitEntity>> = repo.observeAllHabits()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    private val period = MutableStateFlow(StatsPeriod.MONTH)
+
+    val stats: StateFlow<StatsUi> = combine(date, period) { day, chosen -> day to chosen }
+        .flatMapLatest { (day, chosen) -> repo.observeStats(day, chosen) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), StatsUi())
+
+    fun pickPeriod(chosen: StatsPeriod) { period.value = chosen }
 
     /** Settle whatever finished while the app was away, then show the day we are actually in. */
     fun refresh() = viewModelScope.launch {

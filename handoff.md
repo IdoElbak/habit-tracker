@@ -47,10 +47,10 @@ Hard requirements from the original request:
 |---|---|
 | 0 · Toolchain | **DONE** — Android SDK, Gradle, JDK, Node all working |
 | 1 · Design canvas | **DONE** — published, awaiting Ido's visual edits (not blocking) |
-| 2 · Engine + data layer | **DONE** — 84 unit tests, all passing |
+| 2 · Engine + data layer | **DONE** — 90 unit tests, all passing |
 | 3 · Today screen + add/edit habit | **DONE** — plus Week and Habits pages (see "Page structure") |
-| 4 · Analytics screens | **NEXT** |
-| 5 · Settings | not started |
+| 4 · Analytics screens | **DONE** — Stats screen; per-habit detail view deliberately deferred |
+| 5 · Settings | **NEXT** |
 | 6 · Notifications | not started |
 | 7 · Widgets (1×1, 2×1) | not started |
 | 8 · Hebrew + bidi | not started |
@@ -65,8 +65,9 @@ DayBoundaryTest      9      DueCalculatorTest   11
 HabitStrengthTest    9      MoodInsightsTest     9
 StatsWindowTest      9      StreakEngineTest    20
 DayCloserTest       11      TodayUiTest          6
+StatsTest            6
                     ───────────────────────────────
-                    84 tests, 0 failures, 0 errors
+                    90 tests, 0 failures, 0 errors
 ```
 
 Run them with:
@@ -228,12 +229,18 @@ app/src/main/java/com/idoelbak/tracker/ui/
                          rate, save, archive. Three screens over one database.
     TodayScreen.kt       header, ring summary, Due today, Optional, mood + motivation sliders
     WeekScreen.kt        every habit against its own full week: bar, 7 dots, "3 of 7"
+    StatsScreen.kt       period selector, three headline numbers, strength bars, 4-week heat
+                         grid, weekday bars + the weakest-day sentence, 8-week trend, mood
     HabitsScreen.kt      the dry definitions only -- name, schedule, edit, archived
     EditHabitScreen.kt   name, optional emoji, the three frequency modes, archive
     Components.kt        isolated() bidi helper, Glyph (SVG path renderer), ring, week dots,
                          tick box, pill
     theme/Palette.kt     7 palettes as DATA, light + dark token sets
     theme/Theme.kt       fonts, type ramp, TextDirection.Content on every style, LocalTokens
+
+app/src/main/java/com/idoelbak/tracker/data/Stats.kt
+    StatsPeriod, StatsUi and buildStats() -- another pure top-level function, so every
+    percentage on the stats screen is unit-tested without Room.
 
 app/src/main/java/com/idoelbak/tracker/data/TrackerRepository.kt
     The only place DAOs meet the engine. buildToday() is a top-level internal function
@@ -248,6 +255,7 @@ app/src/test/java/com/idoelbak/tracker/core/engine/
     HabitStrengthTest.kt  StatsWindowTest.kt  MoodInsightsTest.kt
 app/src/test/java/com/idoelbak/tracker/data/DayCloserTest.kt
 app/src/test/java/com/idoelbak/tracker/data/TodayUiTest.kt    what lands on Today and on Week
+app/src/test/java/com/idoelbak/tracker/data/StatsTest.kt      the stats maths
 ```
 
 ### Design working files — `C:\claude_apps\tracker\design`
@@ -614,24 +622,42 @@ tested. compileSdk is compile-time API surface only and does not restrict which 
 - **Spreadsheet name suggestions** as ignorable chips on the Add screen.
 - **Launcher icon.** The app currently ships the system default. Needed before the release APK.
 
-### Immediately — Phase 4: Analytics
+### Phase 4 as built — and what it left out
 
-Build against `design/Analytics.dc.html` and `design/HabitDetail.dc.html`. The engine work is
-already done and tested — `StatsWindow.gridWeeks()`, `HabitStrength`, `MoodInsights` — so this phase
-is drawing, not logic.
+The Stats screen has the period selector (Week / Month / Year / All), three headline numbers, habit
+strength bars, the four-week consistency grid, weekday bars with the weakest-day sentence, the
+eight-week trend line, and the mood/motivation findings. `buildStats()` in `data/Stats.kt` is pure
+and tested; the screen only draws.
 
-1. **Heatmap ramp** was deliberately dropped from `Tokens` (nothing consumed it). Add the five-step
-   single-hue ramp back to `theme/Palette.kt` when the heatmap is built:
-   `#F0ECE0 #D4DCBF #B2C094 #8FA16C #6B7C47` for Indigo & Sage, derived for the rest.
-2. **Four weeks, not a calendar month** — `StatsWindow.gridWeeks()`, weekday columns aligned.
-3. Habit strength bars, completion rate, current + best streak, **day-of-week bars** (the most
-   actionable chart), weekly trend line, totals.
-4. Mood/motivation finding from `MoodInsights` — it returns null rather than inventing an insight,
-   so the card must be able to render nothing.
-5. Replace the `Placeholder("Stats", …)` composable in `TrackerApp.kt`.
+Two decisions worth knowing:
 
-Remaining phases in order: 5 Settings · 6 Notifications · 7 Widgets · 8 Hebrew/bidi ·
-9 Export/import · 10 CI + APK release flow · 11 On-device verification.
+- **Stats count settled days only.** Today is excluded because it has not closed — counting it would
+  drag every percentage down all morning and back up all evening. The empty state says so.
+- **The per-habit detail screen (`design/HabitDetail.dc.html`) was not built.** The strength bars
+  already answer "which habit is failing", and a detail view is a second full screen for a question
+  the list mostly answers. Add it when the strength row genuinely needs somewhere to lead —
+  the natural entry point is tapping a strength row.
+
+### Immediately — Phase 5: Settings
+
+Build against `design/Settings.dc.html`. Everything it needs already exists as data:
+
+1. **Palette picker** — `Palettes.all` is a list of 7; `TrackerTheme(palette = …)` already takes one.
+   Persist the choice in DataStore (the dependency is declared, unused so far) and read it in
+   `TrackerApp` before `TrackerTheme`.
+2. **Light / dark / system override** — `TrackerTheme` already takes `dark: Boolean`.
+3. **Week start** — currently the constant `TrackerRepository.weekStart` with a `ponytail:` comment
+   on it. Moving it to DataStore is the whole change; every date question already routes through it.
+4. **Language** — `AppCompatDelegate.setApplicationLocales` plus `locales_config.xml`. MainActivity
+   is already an `AppCompatActivity` for exactly this.
+5. **Samsung battery card** — `ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS`, and the walkthrough for
+   Settings → Battery → Background usage limits. This matters more than it looks: One UI silently
+   killing alarms is the single most common reason habit reminders stop working.
+
+The Settings route already exists (gear in the Today header) and currently renders a placeholder.
+
+Remaining phases in order: 6 Notifications · 7 Widgets · 8 Hebrew/bidi · 9 Export/import ·
+10 CI + APK release flow · 11 On-device verification.
 
 ### Blocked on Ido
 
@@ -667,8 +693,10 @@ Remaining phases in order: 5 Settings · 6 Notifications · 7 Widgets · 8 Hebre
    Five new tests in `TodayUiTest`.
 3. **Phase 3 shipped**: theme layer with 7 palettes, both variable fonts in `res/font`, the
    repository, Today / Habits / Add-Edit screens, nav and bottom bar. `assembleDebug` is green.
-4. **Git repo initialised** with six commits by area (scaffold, engine, data, design, UI). The
-   GitHub remote is the one thing still outstanding.
+4. **Phase 4 shipped too**: the Stats screen, with `buildStats()` as a pure tested function.
+5. **Git repo initialised**, commits by area (scaffold, engine, data, design, UI, freeze fix, page
+   split, stats). The GitHub remote is the one thing still outstanding — the permission classifier
+   refuses `gh repo create --public --push` from a tool call, twice asked.
 
 Two judgement calls worth re-reading above: what was deliberately left out of Phase 3, and the open
 question about whether "This week" belongs on Today.

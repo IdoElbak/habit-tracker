@@ -136,6 +136,23 @@ class TrackerRepository(
     /** Every habit ever defined, archived ones included. The configuration page reads this. */
     fun observeAllHabits(): Flow<List<HabitEntity>> = db.habits().observeAll()
 
+    /**
+     * Everything the stats screen needs. The query window is always the wider of the period and the
+     * strength window, so the strength bars do not shrink when the period selector is set to Week.
+     */
+    fun observeStats(date: LocalDate, period: StatsPeriod): Flow<StatsUi> {
+        val from = minOf(period.from(date, weekStart), date.minusDays(120))
+        return combine(
+            db.dayRecords().observeBetween(from, date),
+            db.dayRatings().observeBetween(from, date),
+            db.habits().observeActive(),
+            db.completions().observeBetween(from, date),
+            db.streakState().observe()
+        ) { records, ratings, habits, ticks, streak ->
+            buildStats(date, weekStart, period, records, ratings, habits, ticks, streak)
+        }
+    }
+
     suspend fun toggle(habitId: Long, date: LocalDate) {
         if (db.completions().isDone(habitId, date)) {
             db.completions().untick(habitId, date)

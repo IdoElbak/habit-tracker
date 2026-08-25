@@ -61,6 +61,7 @@ fun TrackerApp(vm: TrackerViewModel = viewModel()) {
     val today by vm.today.collectAsState()
     val week by vm.week.collectAsState()
     val habits by vm.habits.collectAsState()
+    val stats by vm.stats.collectAsState()
 
     TrackerTheme {
         Scaffold(
@@ -107,7 +108,7 @@ fun TrackerApp(vm: TrackerViewModel = viewModel()) {
                 }
 
                 composable(ROUTE_STATS) {
-                    Placeholder("Stats", "Charts, heatmap and habit strength land in the next phase.")
+                    StatsScreen(ui = stats, onPeriod = { vm.pickPeriod(it) })
                 }
 
                 composable(ROUTE_SETTINGS) {

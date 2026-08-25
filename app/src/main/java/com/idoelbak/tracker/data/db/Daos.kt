@@ -119,6 +119,9 @@ interface DayRatingDao {
     @Query("SELECT * FROM day_ratings WHERE date BETWEEN :from AND :to ORDER BY date")
     suspend fun between(from: LocalDate, to: LocalDate): List<DayRatingEntity>
 
+    @Query("SELECT * FROM day_ratings WHERE date BETWEEN :from AND :to ORDER BY date")
+    fun observeBetween(from: LocalDate, to: LocalDate): Flow<List<DayRatingEntity>>
+
     @Upsert
     suspend fun put(rating: DayRatingEntity)
 }
