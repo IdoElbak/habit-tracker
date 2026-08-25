@@ -12,9 +12,9 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '21'
@@ -23,8 +23,9 @@ jobs:
 
       - name: Install the SDK bits this project pins
         run: |
-          yes | sdkmanager --licenses > /dev/null
-          sdkmanager "platforms;android-37.1" "build-tools;37.0.0"
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMANAGER" --licenses > /dev/null
+          "$SDKMANAGER" "platforms;android-37.1" "build-tools;37.0.0"
 
       # One keystore, for ever. Android refuses an update signed by a different key, so losing
       # this secret means every install has to be uninstalled and reinstalled by hand.
