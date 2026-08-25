@@ -55,7 +55,7 @@ Hard requirements from the original request:
 | 7 · Widgets (1×1, 2×1) | not started |
 | 8 · Hebrew + bidi | not started |
 | 9 · Export/import | not started |
-| 10 · GitHub repo + CI + APK distribution | **PARTLY** — repo initialised, six commits made locally; creating the GitHub remote and pushing is still open (see below) |
+| 10 · GitHub repo + CI + APK distribution | **PARTLY** — repo initialised, ten commits made locally; creating the GitHub remote and pushing is still open (see below) |
 | 11 · On-device verification | not started |
 
 ### Test status
@@ -121,7 +121,7 @@ re-extract it if it is gone.)
 | Gradle | **9.7.1** — wrapper in the project, plus a standalone copy at `C:/claude_apps/.tools/gradle-9.7.1` |
 | Node | **v24.19.0 portable** at `C:/claude_apps/.tools/node-v24.19.0-win-x64/node.exe`. Deliberately NOT installed system-wide — it exists only for the design-canvas tooling. Deleting `.tools/` breaks nothing else. |
 | **gh (GitHub CLI)** | **2.98.0, logged in as `IdoElbak`.** Ido installed it himself with `winget install --id GitHub.cli`. |
-| git | 2.53.0 — **repo initialised**, branch `main`, six commits, no remote yet |
+| git | 2.53.0 — **repo initialised**, branch `main`, ten commits, no remote yet |
 
 ### gh CLI and the repo
 
@@ -132,7 +132,7 @@ workflow). `gh` is still not always on `PATH` in the Bash tool — prefix with:
 export PATH="$PATH:/c/Program Files/GitHub CLI"
 ```
 
-The local repo exists: branch `main`, six commits, git identity set locally to
+The local repo exists: branch `main`, ten commits, git identity set locally to
 
 ```
 user.name  = Ido Elbak
@@ -664,7 +664,7 @@ Remaining phases in order: 6 Notifications · 7 Widgets · 8 Hebrew/bidi · 9 Ex
 - **Creating the GitHub remote and pushing.** Claude Code's permission classifier refused
   `gh repo create --public --push`. He runs it himself:
   `! gh repo create habit-tracker --public --source=. --remote=origin --push`
-  (or approves the same command when prompted). The six local commits are ready to go.
+  (or approves the same command when prompted). The ten local commits are ready to go.
 - **The keystore** for Phase 10's release flow — generated once, never committed, base64'd into
   repo secrets `KEYSTORE_BASE64` / `KEYSTORE_PASSWORD` / `KEY_ALIAS` / `KEY_PASSWORD`.
 - **Design canvas feedback** — not blocking.
