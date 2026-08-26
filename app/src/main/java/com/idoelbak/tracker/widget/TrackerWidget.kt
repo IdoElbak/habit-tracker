@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.Image
@@ -95,7 +96,7 @@ private fun Content(context: Context, ui: TodayUi, tokens: Tokens) {
                 if (ui.dueCount == 0 || ui.left == 0) "" else "${ui.left}",
                 style = TextStyle(
                     color = ColorProvider(tokens.ink),
-                    fontSize = 15.sp(),
+                    fontSize = 15.sp,
                     fontWeight = FontWeight.Bold
                 )
             )
@@ -107,24 +108,19 @@ private fun Content(context: Context, ui: TodayUi, tokens: Tokens) {
                     "${ui.streak}",
                     style = TextStyle(
                         color = ColorProvider(tokens.primary),
-                        fontSize = 20.sp(),
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
                 )
                 Text(
                     if (ui.left == 0) context.getString(R.string.widget_streak_done)
                     else context.getString(R.string.widget_streak_left, ui.left),
-                    style = TextStyle(color = ColorProvider(tokens.muted), fontSize = 11.sp())
+                    style = TextStyle(color = ColorProvider(tokens.muted), fontSize = 11.sp)
                 )
             }
         }
     }
 }
-
-private fun Int.sp() = androidx.compose.ui.unit.TextUnit(
-    toFloat(),
-    androidx.compose.ui.unit.TextUnitType.Sp
-)
 
 /**
  * Glance has no drawing API, so the ring is painted into a bitmap the widget shows as an image.

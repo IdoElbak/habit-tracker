@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -91,7 +92,10 @@ class TrackerViewModel(app: Application) : AndroidViewModel(app) {
 
     /** Settle whatever finished while the app was away, then show the day we are actually in. */
     fun refresh() = viewModelScope.launch {
-        repo.settle(settings.value.weekStart)
+        // Read the stored week start rather than the StateFlow's seed value: on the first resume
+        // after launch the flow may still hold the default, and a day settled under the wrong week
+        // start is settled wrong for ever.
+        repo.settle(prefs.flow.first().weekStart)
         date.value = repo.today()
         val app = getApplication<Application>()
         Reminders.ensureChannels(app)

@@ -40,7 +40,9 @@ abstract class TrackerDatabase : RoomDatabase() {
 
         private fun build(context: Context): TrackerDatabase =
             Room.databaseBuilder(context, TrackerDatabase::class.java, NAME)
-                // Foreign keys are declared on the entities; SQLite only enforces them when asked.
+                // Room turns on foreign-key enforcement itself, so archiving a habit cannot leave
+                // orphaned completions behind. No fallbackToDestructiveMigration: losing a year of
+                // history to a schema bump is not an acceptable failure mode.
                 .build()
     }
 }
