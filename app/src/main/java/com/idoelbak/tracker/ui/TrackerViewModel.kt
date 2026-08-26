@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.idoelbak.tracker.core.model.Schedule
+import com.idoelbak.tracker.data.Backfill
 import com.idoelbak.tracker.data.Backup
 import com.idoelbak.tracker.data.BackupSummary
 import com.idoelbak.tracker.data.Backups
@@ -95,6 +96,14 @@ class TrackerViewModel(app: Application) : AndroidViewModel(app) {
         val app = getApplication<Application>()
         Reminders.ensureChannels(app)
         if (settings.value.remindersEnabled) Reminders.scheduleNext(app)
+    }
+
+    /** Correct a forgotten tick on an earlier day. Ignored outside the back-fill window. */
+    fun toggleOn(habitId: Long, day: LocalDate) = viewModelScope.launch {
+        if (!Backfill.canEdit(day, date.value)) return@launch
+        repo.toggle(habitId, day)
+        Reminders.refresh(getApplication())
+        TrackerWidget().updateAll(getApplication())
     }
 
     fun toggle(habitId: Long) = viewModelScope.launch {

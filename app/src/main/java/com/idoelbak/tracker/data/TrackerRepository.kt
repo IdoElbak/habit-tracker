@@ -64,6 +64,23 @@ data class TodayUi(
     val left: Int get() = dueCount - doneCount
 }
 
+/**
+ * How far back a forgotten tick can still be corrected.
+ *
+ * A week, deliberately. Long enough to fix "I did it and forgot to tap", short enough that the
+ * record stays a record rather than something you can rewrite at will. Note what it does NOT do:
+ * a day that has already closed keeps the verdict it earned, because settled days are never
+ * recomputed -- so back-filling fixes the history and the weekly quota, and cannot buy back a
+ * streak you actually lost.
+ */
+object Backfill {
+
+    const val WINDOW_DAYS = 7
+
+    fun canEdit(date: LocalDate, today: LocalDate): Boolean =
+        !date.isAfter(today) && !date.isBefore(today.minusDays((WINDOW_DAYS - 1).toLong()))
+}
+
 /** One habit's week: how many of its sessions are banked, and which days they landed on. */
 data class WeekRow(
     val id: Long,
@@ -80,6 +97,7 @@ data class WeekRow(
 data class WeekUi(
     val from: LocalDate,
     val to: LocalDate,
+    val today: LocalDate = from,
     val rows: List<WeekRow> = emptyList()
 ) {
     val done: Int get() = rows.sumOf { it.done }
@@ -287,6 +305,7 @@ internal fun buildWeek(
 ) = WeekUi(
     from = weekFrom,
     to = weekFrom.plusDays(6),
+    today = date,
     rows = habits.map { habit ->
         val mine = ticks.filter { it.habitId == habit.id }
         WeekRow(

@@ -27,6 +27,7 @@
     <string name="week_nothing">Nothing scheduled this week</string>
     <string name="week_percent">%1$d%% of the week\'s plan</string>
     <string name="week_every_habit">Every habit</string>
+    <string name="week_backfill_note">Tap any day of the last week to fix a forgotten tick. A day that has already closed keeps the verdict it earned.</string>
     <string name="count_of">%1$d of %2$d</string>
     <string name="quota_this_week">%1$d of %2$d this week</string>
 

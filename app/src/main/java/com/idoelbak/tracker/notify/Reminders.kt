@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import com.idoelbak.tracker.MainActivity
 import com.idoelbak.tracker.R
+import com.idoelbak.tracker.core.engine.DayBoundary
 import com.idoelbak.tracker.core.engine.DueCalculator
 import com.idoelbak.tracker.core.engine.StreakEngine
 import com.idoelbak.tracker.core.engine.StreakState
@@ -22,6 +23,7 @@ import com.idoelbak.tracker.data.Prefs
 import com.idoelbak.tracker.data.TodayUi
 import com.idoelbak.tracker.data.TrackerRepository
 import com.idoelbak.tracker.data.db.TrackerDatabase
+import com.idoelbak.tracker.ui.isolated
 import kotlinx.coroutines.flow.first
 import java.time.Duration
 import java.time.LocalDateTime
@@ -144,14 +146,23 @@ object Reminders {
 
         when (SLOTS.getOrNull(slot)) {
             PLAN -> {
+                // Escalation has to be judged against what is actually banked this week. Asking
+                // with zero completions claims every quota habit is running out of days.
+                val weekFrom = DayBoundary.weekStartOf(date, prefs.weekStart)
+                val ticks = TrackerDatabase.get(context).completions().between(weekFrom, date)
                 val escalated = habits.count { habit ->
-                    DueCalculator.justEscalated(habit.schedule, date, prefs.weekStart, 0)
+                    DueCalculator.justEscalated(
+                        habit.schedule,
+                        date,
+                        prefs.weekStart,
+                        ticks.count { it.habitId == habit.id && it.date < date }
+                    )
                 }
                 post(
                     context, ID_PLAN, CHANNEL_NUDGE,
                     context.getString(R.string.notif_plan_title, ui.dueCount),
                     buildString {
-                        append(ui.due.joinToString(", ") { it.name })
+                        append(ui.due.joinToString(", ") { it.name.isolated() })
                         if (escalated > 0) append(" " + context.getString(R.string.notif_escalation))
                     }
                 )
@@ -174,7 +185,7 @@ object Reminders {
             else -> post(
                 context, ID_PROGRESS, CHANNEL_NUDGE,
                 context.getString(R.string.notif_progress_title, ui.doneCount, ui.dueCount),
-                ui.due.filterNot { it.done }.joinToString(", ") { it.name }
+                ui.due.filterNot { it.done }.joinToString(", ") { it.name.isolated() }
             )
         }
     }
@@ -213,7 +224,7 @@ object Reminders {
             id = ID_COUNTDOWN,
             channel = CHANNEL_URGENT,
             title = context.getString(R.string.notif_countdown_title, ui.left),
-            text = ui.due.filterNot { it.done }.joinToString(", ") { it.name },
+            text = ui.due.filterNot { it.done }.joinToString(", ") { it.name.isolated() },
             urgent = true
         ) {
             setOngoing(true)

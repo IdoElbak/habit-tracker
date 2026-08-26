@@ -172,7 +172,12 @@ fun TrackerApp(vm: TrackerViewModel = viewModel()) {
                     )
                 }
 
-                composable(ROUTE_WEEK) { WeekScreen(week) }
+                composable(ROUTE_WEEK) {
+                    WeekScreen(
+                        ui = week,
+                        onToggleDay = { habitId, day -> vm.toggleOn(habitId, day) }
+                    )
+                }
 
                 composable(ROUTE_HABITS) {
                     HabitsScreen(

@@ -123,6 +123,15 @@ class TodayUiTest {
     }
 
     @Test
+    fun `a forgotten tick can be fixed for a week, and no further`() {
+        assertTrue("today", Backfill.canEdit(tuesday, tuesday))
+        assertTrue("yesterday", Backfill.canEdit(monday, tuesday))
+        assertTrue("the sixth day back is the last one", Backfill.canEdit(tuesday.minusDays(6), tuesday))
+        assertFalse("a week and a day is history", Backfill.canEdit(tuesday.minusDays(7), tuesday))
+        assertFalse("tomorrow has not happened", Backfill.canEdit(tuesday.plusDays(1), tuesday))
+    }
+
+    @Test
     fun `a met quota drops off today but a missed day never shows as a miss`() {
         val ticks = listOf(tick(draw.id, sunday), tick(draw.id, monday), tick(draw.id, tuesday))
         val wednesday = sunday.plusDays(3)

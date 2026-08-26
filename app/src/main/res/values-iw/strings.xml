@@ -27,6 +27,7 @@
     <string name="week_nothing">אין כלום מתוכנן השבוע</string>
     <string name="week_percent">%1$d%% מתוכנית השבוע</string>
     <string name="week_every_habit">כל ההרגלים</string>
+    <string name="week_backfill_note">הקישו על יום מהשבוע האחרון כדי לתקן סימון שנשכח. יום שכבר נסגר שומר על התוצאה שהרוויח.</string>
     <string name="count_of">%1$d מתוך %2$d</string>
     <string name="quota_this_week">%1$d מתוך %2$d השבוע</string>
 
