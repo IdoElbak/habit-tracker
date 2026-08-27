@@ -11,6 +11,7 @@ local.properties
 # Signing material -- NEVER commit. Updates break if the key changes.
 *.jks
 *.keystore
+*.b64
 keystore.properties
 signing/
 

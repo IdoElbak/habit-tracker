@@ -13,7 +13,7 @@ runs out, and a 1×1 home-screen widget showing how the day is going.
 - **Only what is due today is on Today.** A habit scheduled for Mondays is simply absent on Tuesday;
   it is on the Habits page, and it comes back on Monday. A weekly-quota habit sits under "Optional"
   while it has slack — ticking it there takes it off a later day — and moves up to "Due today" the
-  moment the sessions owed equal the days left.
+  moment the sessions owed reach the days left.
 - **Miss one and the day still counts** — but only when four or more habits were due. On a light day
   everything is required.
 - **Two freezes, spent automatically** on a genuinely bad day. A frozen day holds the streak where it
@@ -68,22 +68,25 @@ Tagging `v*` builds a signed APK and attaches it to a GitHub Release. That needs
 generated once and **never committed** — Android refuses an update signed by a different key, so the
 day this file is lost is the day every install has to be removed and reinstalled by hand.
 
+`keytool` ships with the JDK; if it is not on `PATH`, call it as `"$JAVA_HOME/bin/keytool"`.
+
 ```bash
 keytool -genkeypair -v -keystore tracker.jks -alias tracker \
   -keyalg RSA -keysize 4096 -validity 10000
 
-base64 -w 0 tracker.jks > tracker.jks.b64          # macOS/BSD: base64 -i tracker.jks
+# Pipe it -- never write the base64 to a file in the repo.
+base64 -w 0 tracker.jks | gh secret set KEYSTORE_BASE64    # macOS/BSD: base64 -i tracker.jks | ...
 
-gh secret set KEYSTORE_BASE64 < tracker.jks.b64
 gh secret set KEYSTORE_PASSWORD
 gh secret set KEY_ALIAS        # tracker
 gh secret set KEY_PASSWORD
 
 git tag v0.1.0 && git push origin v0.1.0
+sleep 10   # give GitHub a moment to register the run
+gh run watch $(gh run list --workflow release.yml --limit 1 --json databaseId -q '.[0].databaseId') --exit-status
 ```
 
-Keep `tracker.jks` and its passwords somewhere you will still have them in five years. Delete
-`tracker.jks.b64` once the secret is set.
+Keep `tracker.jks` and its passwords somewhere you will still have them in five years.
 
 ## Fonts
 

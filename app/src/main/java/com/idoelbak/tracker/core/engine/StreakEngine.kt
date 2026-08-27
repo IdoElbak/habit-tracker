@@ -29,7 +29,7 @@ data class StreakState(
     /**
      * Days that counted, banked since the last freeze was earned -- 7 of them restore one freeze.
      * A day saved by the allowance counts, and spending a freeze does not wipe the progress:
-     * a bad day costs you the freeze, not the fortnight of work behind the next one.
+     * a bad day costs you the freeze, not the seven days of work behind the next one.
      * Only actually breaking the streak resets it.
      */
     val cleanDays: Int = 0

@@ -10,8 +10,9 @@ import java.time.LocalDate
  * Decides whether a habit is required today, merely available, or not expected at all.
  *
  * The interesting case is [ScheduleType.TIMES_PER_WEEK]. A "3 times per week" habit drifts along as
- * [DueState.OPEN] while there is still slack, and escalates to [DueState.DUE] at exactly the moment
- * the sessions still owed equal the days still left. That escalation is what the end-of-week
+ * [DueState.OPEN] while there is still slack, and escalates to [DueState.DUE] as soon as the sessions
+ * still owed reach the days still left -- and stays there if it falls further behind, which back-fill
+ * on the Week grid or a raised quota can both cause. That escalation is what the end-of-week
  * catch-up notification fires on, and it is why a gym habit never reads as "missed" on a rest day.
  */
 object DueCalculator {

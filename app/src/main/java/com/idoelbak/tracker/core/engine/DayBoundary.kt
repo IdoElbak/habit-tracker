@@ -36,7 +36,7 @@ object DayBoundary {
      * Days left in the week including [date] itself.
      *
      * This is the number that makes a weekly-quota habit go from optional to mandatory: once the
-     * sessions you still owe equal the days you have left, today stops being a choice.
+     * sessions you still owe reach the days you have left, today stops being a choice.
      */
     fun daysRemainingInWeek(date: LocalDate, weekStart: DayOfWeek): Int =
         7 - Math.floorMod(date.dayOfWeek.value - weekStart.value, 7)

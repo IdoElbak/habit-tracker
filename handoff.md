@@ -50,7 +50,7 @@ Hard requirements from the original request, and where each one landed:
 
 **Everything is built, tested, committed and pushed. Nothing is half-finished.**
 
-- Repo: **https://github.com/IdoElbak/habit-tracker** (public, branch `main`, 22 commits)
+- Repo: **https://github.com/IdoElbak/habit-tracker** (public, branch `main`, everything pushed)
 - CI: **green** on a clean runner — tests, lint and a debug build in about five minutes
 - `./gradlew assembleDebug` and `assembleRelease` both build; the release APK is ~3 MB through R8
 - **95 unit tests, 0 failures**
@@ -136,7 +136,7 @@ re-extract it if it is gone. The `.dc.html` files in `design/` are permanent and
 | Gradle | **9.7.1** — wrapper in the project, plus a standalone copy at `C:/claude_apps/.tools/gradle-9.7.1` |
 | Node | **v24.19.0 portable** at `C:/claude_apps/.tools/node-v24.19.0-win-x64/node.exe`. Deliberately NOT system-wide — it exists only for the design-canvas tooling. Deleting `.tools/` breaks nothing else. |
 | gh (GitHub CLI) | **2.98.0, logged in as `IdoElbak`.** Not always on `PATH` in the Bash tool: `export PATH="$PATH:/c/Program Files/GitHub CLI"` |
-| git | 2.53.0 — `main`, 22 commits, pushed. Identity `Ido Elbak <ido.elbak@gmail.com>` |
+| git | 2.53.0 — `main`, pushed. Identity `Ido Elbak <ido.elbak@gmail.com>` |
 
 ### Claude Code permissions
 
@@ -318,7 +318,7 @@ once a month, and four labels stay readable in Hebrew. Changing that is one entr
 - **All three scheduling modes**: every day / N times per week / specific weekdays.
 - **Tick-only in v1.** No numeric targets; the model can take them later.
 - **`TIMES_PER_WEEK` escalation** is the quiet win: a quota habit is `OPEN` while there is slack and
-  flips to `DUE` the moment `sessionsOwed == daysLeftInWeek`. Only `DUE` habits count toward the
+  flips to `DUE` the moment `sessionsOwed >= daysLeftInWeek`. Only `DUE` habits count toward the
   day's verdict, so a gym habit never reads as "missed" on a rest day and cannot poison a
   percentage. That same moment triggers the end-of-week catch-up line in the morning nudge.
 - **Week starts Sunday** by default (Israel); changeable in Settings between Sat / Sun / Mon.
@@ -356,9 +356,14 @@ it. `TodayUiTest` pins all of it.
   > *"a qualifying day should also increment the days. and a frozen day doesn't reset the counter it
   > leaves it as is. only a broken day with no available freezes will reset the days."*
 
-  So: **PERFECT and COMPLETE both increment `cleanDays`. FROZEN leaves it untouched. Only BROKEN
-  resets it.** A bad day costs the freeze, not the fortnight of work behind the next one. Three tests
-  pin it. (An intermediate version required *perfect* days; it was wrong and was reverted.)
+  So: **PERFECT and COMPLETE both increment `currentStreak` and `cleanDays`. FROZEN leaves both
+  untouched. Only BROKEN resets `currentStreak`.** A bad day costs the freeze, not the seven days of
+  work behind the next one. Three tests pin it. (An intermediate version required *perfect* days; it
+  was wrong and was reverted.)
+
+  Two footnotes so the rule reads true against the code: `cleanDays` *also* drops to zero each time
+  it reaches 7 and pays out a freeze — that is the rollover, not a reset. And there is a fifth
+  verdict, EMPTY, which returns the previous state wholly unchanged.
 - **A FROZEN day HOLDS the streak at its number and does not increment it** — verified against
   Duolingo rather than guessed. Do not change this back without checking.
 - **A settled day is NEVER recomputed.** `DayRecordDao.close()` uses `OnConflictStrategy.IGNORE`,
@@ -393,7 +398,7 @@ it. `TodayUiTest` pins all of it.
 08:00              the day's plan, and whether a weekly habit is running out of days
 12:30/15:30/18:30  progress and what is left, only if something is
 22:00              ONGOING colorised RED notification with a LIVE counting-down chronometer
-22:45              streak-save alert, only when the streak is genuinely at risk
+22:45              streak-save alert, when the day as it stands would break the streak
 ```
 
 - **It goes silent the moment the day is done.** The one place I held back from Duolingo: firing at
@@ -401,7 +406,11 @@ it. `TodayUiTest` pins all of it.
 - **The countdown ticks itself.** `setChronometerCountDown(true)` + `setColorized(true)` +
   `setOngoing(true)` — one notification, not an alarm a minute. It refreshes on every tick and is
   cancelled the moment the day completes.
-- **Alarms are inexact on purpose** (`setWindow`, ±10 min) and there is **no `SCHEDULE_EXACT_ALARM`**.
+- **`streakAtRisk()` does not look at freezes.** It compares misses against the allowance and stops
+  there, so on a day a banked freeze would absorb, the 22:45 alert still fires. Expect it during
+  checklist item 8. Arguably correct — "spend a freeze" is worth nudging about — but it is not what
+  "genuinely at risk" would mean, and if it should be silent, the guard is `state.freezes > 0`.
+- **Alarms are inexact on purpose** (`setWindow`, a ten-minute window, so ±5 min) and there is **no `SCHEDULE_EXACT_ALARM`**.
   Habit reminders do not need second accuracy, and Samsung One UI has a well-known bug where denying
   that permission makes the Alarms & Reminders setting vanish entirely.
 - **Each alarm books the next when it fires**, so there is one pending intent and it lives in the
@@ -431,8 +440,11 @@ word or a trailing `?` leaks its direction into the surrounding Hebrew. Both mec
 
 1. `BidiFormatter.unicodeWrap(...)` on every user-entered string — `String.isolated()` in
    `ui/Components.kt`, used on Today, Week, Habits, Stats **and in notifications**.
-2. `textDirection = TextDirection.Content` on **every** style in the typography, so paragraph
-   direction comes from the string's first strong character rather than the app locale.
+2. `textDirection = TextDirection.Content` on every style **the app defines** in the typography, so
+   paragraph direction comes from the string's first strong character rather than the app locale.
+   That is 10 of Material3's 15 slots; `displayLarge/Medium`, `headlineLarge/Small` and `titleSmall`
+   are not overridden and keep framework defaults. Nothing uses them today — the first screen that
+   reaches for one loses the isolation, so add it to `style()` rather than reaching past it.
 
 Plus `android:supportsRtl="true"`, `start`/`end` padding everywhere, `locales_config.xml`, and
 `AppCompatDelegate.setApplicationLocales` behind the Settings language picker. Weekday names read
@@ -452,14 +464,25 @@ Read ספר daily!          English + Hebrew + trailing exclamation
 
 **Backup**
 
-- The whole database as **one versioned JSON file**. Dates travel as epoch days — the shape SQLite
-  already holds — so a backup cannot drift a day across a timezone.
-- Unknown fields are ignored and every field has a default, so an old backup loads into a newer app;
-  a backup from a *newer* app is refused rather than half-read.
+- Habits, ticks, day records, ratings and the streak as **one versioned JSON file**. Dates travel as
+  epoch days — the shape SQLite already holds — so a backup cannot drift a day across a timezone.
+- **`categories` is not in the format**, and neither is `HabitEntity.categoryId`. Nothing in the UI
+  writes either one yet, so nothing is lost today — but a round trip drops them silently, and that
+  has to be fixed before category chips ship.
+- Unknown fields are ignored (`ignoreUnknownKeys`), so a newer app reads an old backup's extra
+  fields without choking; a backup from a *newer* app is refused rather than half-read.
+- **Most DTO fields have no default**, so kotlinx.serialization treats them as required. Adding a
+  field to `DayDto` in v2 without a default makes every v1 backup throw `MissingFieldException`.
+  New fields get defaults, always.
 - **CSV** is one row per tick, for the spreadsheet this replaced.
 - **A restore replaces, it does not merge.** Two half-merged histories would produce streak numbers
   that never happened. It runs in one transaction behind a dialog that names the counts, and every
   outcome including failure is reported — silence after a restore is how people lose a year of data.
+- **Two tables escape that replace.** The wipe covers completions, day records, ratings and habits;
+  `streak_state` is overwritten only if the backup carries one (`backup.streak?.let`), and
+  `categories` is never touched. So restoring a file exported before any day was closed leaves the
+  *old* device's streak numbers sitting beside the restored history — the exact failure the bullet
+  above exists to prevent. Clear both unconditionally when this is fixed.
 - Files go through the Storage Access Framework, so there is still **no storage permission**.
 
 **Distribution**
@@ -627,32 +650,39 @@ The only thing standing between the repo and an installable APK, and it must be 
 what proves every future update comes from him.
 
 ```bash
+export JAVA_HOME="C:/Program Files/Java/jdk-21.0.10"     # keytool is not on PATH
 export PATH="$PATH:/c/Program Files/GitHub CLI"
 cd C:/claude_apps/tracker
 
-keytool -genkeypair -v -keystore tracker.jks -alias tracker \
+"$JAVA_HOME/bin/keytool" -genkeypair -v -keystore tracker.jks -alias tracker \
   -keyalg RSA -keysize 4096 -validity 10000        # asks for a password; write it down
 
-base64 -w 0 tracker.jks > tracker.jks.b64
+# Pipe it. Do NOT write the base64 to a file -- *.jks is gitignored, *.b64 is not.
+base64 -w 0 tracker.jks | gh secret set KEYSTORE_BASE64      # macOS/BSD: base64 -i tracker.jks | ...
 
-gh secret set KEYSTORE_BASE64 < tracker.jks.b64
 gh secret set KEYSTORE_PASSWORD      # the password just chosen
 gh secret set KEY_ALIAS              # tracker
 gh secret set KEY_PASSWORD           # the same, unless a separate key password was set
-
-rm tracker.jks.b64                   # keep tracker.jks itself, safe, for ever
 ```
 
-`tracker.jks` is gitignored and must stay that way. **Losing it means every install has to be
-uninstalled and reinstalled by hand**, because Android refuses an update signed by a different key.
-Keep a copy somewhere that will still exist in five years.
+`tracker.jks` is gitignored and must stay that way — but note the gitignore covers `*.jks` only, so
+any base64 dump of it sitting in the repo root **is** committable. That is why the command pipes.
+**Losing the key means every install has to be uninstalled and reinstalled by hand**, because Android
+refuses an update signed by a different key. Keep a copy somewhere that will still exist in five
+years. (README.md → "Releasing" holds a second copy of this procedure; fix both or delete one.)
 
 **4 · Cut the first release — one command**
 
 ```bash
 git tag v0.1.0 && git push origin v0.1.0
-gh run watch $(gh run list --limit 1 --json databaseId -q '.[0].databaseId') --exit-status
+sleep 10   # give GitHub a moment to register the run
+gh run watch $(gh run list --workflow release.yml --limit 1 --json databaseId -q '.[0].databaseId') --exit-status
 ```
+
+`--workflow release.yml` matters. Unscoped, `--limit 1` returns whichever run is newest at that
+instant — which, in the seconds before the release run appears, is the last already-green `check.yml`
+run on `main`. `gh run watch` prints its success and exits 0, and the first sign anything is wrong is
+a 404 on the download URL in step 5.
 
 The workflow builds the signed APK and attaches it as `tracker.apk`.
 
@@ -682,7 +712,10 @@ repo: every future `git tag v0.x.y` arrives as a one-tap update on the phone.
    day's verdict does **not**.
 10. Export a backup, add some junk, restore it. Confirm the dialog reports the right counts and
     everything comes back.
-11. Install the release APK over the debug build and confirm data survives.
+11. Install the release APK. It arrives as a **second app, not an upgrade** — debug is
+    `com.idoelbak.tracker.debug`, release is `com.idoelbak.tracker`, separate icons and separate
+    databases. An empty release build is correct, not a bug. Export from debug, restore into
+    release, confirm the counts, then uninstall the debug build.
 
 ### Deliberately left out — each waiting for a reason to exist
 
@@ -698,7 +731,8 @@ repo: every future `git tag v0.x.y` arrives as a one-tap update on the phone.
   responsive widget and `updatePeriodMillis`.
 - **Room migrations.** Schema is at version 1 and `fallbackToDestructiveMigration` is deliberately
   NOT set. The moment an entity changes, a migration must be written; a backup/restore round trip is
-  the escape hatch in the meantime.
+  the escape hatch in the meantime — as long as nothing has landed in `categories`, which the backup
+  format does not carry.
 
 ### Open questions for Ido
 
